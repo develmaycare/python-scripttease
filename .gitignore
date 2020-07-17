@@ -1,0 +1,14 @@
+*.b
+*.bak
+*.pyc
+*.swp
+.coverage
+.DS_Store
+.idea
+.pytest_cache
+__pycache__
+_scraps
+docs/build
+htmlcov
+tmp.*
+tmp

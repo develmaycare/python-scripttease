@@ -1,0 +1,8 @@
+[run]
+omit =
+    docs/*
+    scripttease/cli/__init__.py
+    sandbox
+    setup.py
+    tmp/*
+    tmp.*
