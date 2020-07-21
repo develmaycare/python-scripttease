@@ -1,6 +1,5 @@
 from scripttease.library.commands.base import Command, ItemizedCommand, Sudo
-from scripttease.library.commands.python import Pip
-from scripttease.library.overlays import Overlay
+from scripttease.library.overlays.common import python_pip
 
 
 class TestCommand(object):
@@ -65,22 +64,22 @@ class TestCommand(object):
 class TestItemizedCommand(object):
 
     def test_getattr(self):
-        c = ItemizedCommand(Pip, ["Pillow", "psycopg2-binary", "django"], "$item", extra=True)
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item", extra=True)
         assert c.extra is True
 
     def test_get_commands(self):
-        c = ItemizedCommand(Pip, ["Pillow", "psycopg2-binary", "django"], "$item")
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
         commands = c.get_commands()
         for i in commands:
-            assert isinstance(i, Pip)
+            assert isinstance(i, Command)
 
     def test_get_statement(self):
-        c = ItemizedCommand(Pip, ["Pillow", "psycopg2-binary", "django"], "$item")
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
         statement = c.get_statement()
         assert "Pillow" in statement
         assert "psycopg2-binary" in statement
         assert "django" in statement
 
     def test_repr(self):
-        c = ItemizedCommand(Pip, ["Pillow", "psycopg2-binary", "django"], "$item")
-        assert repr(c) == "<ItemizedCommand Pip>"
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
+        assert repr(c) == "<ItemizedCommand python_pip>"

@@ -4,7 +4,6 @@ from configparser import ConfigParser, ParsingError
 import logging
 from superpython.utils import parse_jinja_template, read_file, smart_cast, split_csv
 import os
-from ..library.commands import command_factory
 from ..constants import LOGGER_NAME
 from .base import Parser
 
@@ -23,7 +22,11 @@ class Config(Parser):
     """An INI configuration for loading commands."""
 
     def load(self):
+        """Load commands from a INI file."""
         if not self.exists:
+            return False
+
+        if not self.factory.load():
             return False
 
         ini = self._load_ini()
@@ -36,12 +39,15 @@ class Config(Parser):
             command_name = None
             count = 0
             kwargs = self.options.copy()
+            kwargs['comment'] = comment
 
             for key, value in ini.items(comment):
                 # The first key/value pair is the command name and arguments.
                 if count == 0:
                     command_name = key
 
+                    # Arguments surrounded by quotes are considered to be one argument. All others are split into a
+                    # list to be passed to the callback.
                     if value[0] == '"':
                         args.append(value.replace('"', ""))
                     else:
@@ -53,8 +59,13 @@ class Config(Parser):
 
                 count += 1
 
-            command = command_factory(command_name, comment, self.overlay, *args, **kwargs)
+            command = self.factory.get_command(command_name, *args, **kwargs)
             if command is not None:
+                if isinstance(command, self.factory.overlay.Function):
+                    self._functions.append(command)
+                else:
+                    self._commands.append(command)
+
                 # if isinstance(command, Function):
                 #     self._functions.append(command)
                 # elif isinstance(command, Include):
@@ -70,7 +81,6 @@ class Config(Parser):
                 #         self._commands.append(c)
                 # else:
                 #     self._commands.append(command)
-                self._commands.append(command)
             else:
                 success = False
 
@@ -131,20 +141,20 @@ class Config(Parser):
             log.error("Failed to parse %s: %s" % (self.path, e))
             return None
 
-    def _load_template(self, command):
-        """Load additional resources for a template command.
-
-        :param command: The template command.
-        :type command: Template
-
-        """
-        # This may produce problems if template kwargs are the same as the given context.
-        if self.context is not None:
-            command.context.update(self.context)
-
-        # Custom locations come before default locations.
-        command.locations += self.locations
-
-        # This allows template files to be specified relative to the configuration file.
-        command.locations.append(os.path.join(self.directory, "templates"))
-        command.locations.append(self.directory)
+    # def _load_template(self, command):
+    #     """Load additional resources for a template command.
+    #
+    #     :param command: The template command.
+    #     :type command: Template
+    #
+    #     """
+    #     # This may produce problems if template kwargs are the same as the given context.
+    #     if self.context is not None:
+    #         command.context.update(self.context)
+    #
+    #     # Custom locations come before default locations.
+    #     command.locations += self.locations
+    #
+    #     # This allows template files to be specified relative to the configuration file.
+    #     command.locations.append(os.path.join(self.directory, "templates"))
+    #     command.locations.append(self.directory)

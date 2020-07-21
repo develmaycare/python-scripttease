@@ -11,7 +11,7 @@ class Script(object):
         :type name: str
 
         :param commands: The commands to be included.
-        :type commands: list[BaseType[Command]]
+        :type commands: list[scripttease.library.commands.base.Command]
 
         :param functions: The functions to be included.
         :type functions: list[Function]
@@ -49,21 +49,21 @@ class Script(object):
         a = list()
 
         if shebang is not None:
-            a.append("%s" % {'shell': self.shell})
+            a.append(shebang % {'shell': self.shell})
             a.append("")
 
         if self.functions is not None:
             for function in self.functions:
-                a.append(function.preview())
+                a.append(function.to_string())
                 a.append("")
 
-            for function in self.functions:
-                a.append("%s;" % function.name)
+            # for function in self.functions:
+            #     a.append("%s;" % function.name)
 
             a.append("")
 
         for command in self.commands:
-            a.append(command.preview(cwd=True))
+            a.append(command.get_statement(cd=True))
             a.append("")
 
         return "\n".join(a)

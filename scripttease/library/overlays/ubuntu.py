@@ -1,12 +1,57 @@
-from ..commands import Command
-from .common import python_pip, python_virtualenv
-from .posix import file_append, file_copy, mkdir, move, perms, remove
+# Imports
 
-name = "ubuntu"
+from ..commands import Command
+from .common import COMMON_MAPPINGS
+from .django import DJANGO_MAPPINGS
+from .pgsql import PGSQL_MAPPINGS
+from .posix import POSIX_MAPPINGS, Function
+
+# Exports
+
+__all__ = (
+    "MAPPINGS",
+    "apache",
+    "apache_disable_module",
+    "apache_disable_site",
+    "apache_enable_module",
+    "apache_enable_site",
+    "apache_reload",
+    "apache_restart",
+    "apache_start",
+    "apache_stop",
+    "apache_test",
+    "command_exists",
+    "service_reload",
+    "service_restart",
+    "service_start",
+    "service_stop",
+    "system",
+    "system_install",
+    "system_reboot",
+    "system_update",
+    "system_upgrade",
+    "system_uninstall",
+    "Function",
+)
 
 
 def command_exists(name):
     return name in MAPPINGS
+
+
+def apache(op, **kwargs):
+    if op == "reload":
+        return apache_reload(**kwargs)
+    elif op == "restart":
+        return apache_restart(**kwargs)
+    elif op == "start":
+        return apache_start(**kwargs)
+    elif op == "stop":
+        return apache_stop(**kwargs)
+    elif op == "test":
+        return apache_test(**kwargs)
+    else:
+        raise NameError("Unrecognized or unsupported apache operation: %s" % op)
 
 
 def apache_disable_module(name, **kwargs):
@@ -30,7 +75,7 @@ def apache_enable_module(name, **kwargs):
 def apache_enable_site(name, **kwargs):
     kwargs.setdefault("comment", "enable %s apache module" % name)
 
-    return Command("a2densite %s" % name, **kwargs)
+    return Command("a2ensite %s" % name, **kwargs)
 
 
 def apache_reload(**kwargs):
@@ -78,7 +123,7 @@ def service_restart(name, **kwargs):
     kwargs.setdefault("comment", "restart %s service" % name)
     kwargs.setdefault("register", "%s_restarted" % name)
 
-    return Command("service %s reload" % name, **kwargs)
+    return Command("service %s restart" % name, **kwargs)
 
 
 def service_start(name, **kwargs):
@@ -93,6 +138,17 @@ def service_stop(name, **kwargs):
     kwargs.setdefault("register", "%s_stopped" % name)
 
     return Command("service %s stop" % name, **kwargs)
+
+
+def system(op, **kwargs):
+    if op == "reboot":
+        return system_reboot(**kwargs)
+    elif op == "update":
+        return system_update(**kwargs)
+    elif op == "upgrade":
+        return system_upgrade(**kwargs)
+    else:
+        raise NameError("Unrecognized or unsupported system operation: %s" % op)
 
 
 def system_install(name, **kwargs):
@@ -126,6 +182,7 @@ def system_upgrade(**kwargs):
 
 
 MAPPINGS = {
+    'apache': apache,
     'apache.disable_module': apache_disable_module,
     'apache.disable_site': apache_disable_site,
     'apache.enable_module': apache_enable_module,
@@ -135,21 +192,19 @@ MAPPINGS = {
     'apache.start': apache_start,
     'apache.stop': apache_stop,
     'apache.test': apache_test,
-    'append': file_append,
-    'copy': file_copy,
     'install': system_install,
-    'mkdir': mkdir,
-    'move': move,
-    'perms': perms,
-    'pip': python_pip,
     'reboot': system_reboot,
     'reload': service_reload,
-    'remove': remove,
     'restart': service_restart,
     'start': service_start,
     'stop': service_stop,
+    'system': system,
     'update': system_update,
     'uninstall': system_uninstall,
     'upgrade': system_upgrade,
-    'virtualenv': python_virtualenv,
 }
+
+MAPPINGS.update(COMMON_MAPPINGS)
+MAPPINGS.update(DJANGO_MAPPINGS)
+MAPPINGS.update(PGSQL_MAPPINGS)
+MAPPINGS.update(POSIX_MAPPINGS)

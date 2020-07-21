@@ -12,22 +12,22 @@ def read_file(path):
 
 
 setup(
-    name='python-script-tease',
+    name='python-scripttease',
     version=read_file("VERSION.txt"),
     description=read_file("DESCRIPTION.txt"),
     long_description=read_file("README.markdown"),
     author='Shawn Davis',
-    author_email='shawn@myninjas.net',
-    url='https://bitbucket.com/myninjas/python-script-tease',
+    author_email='shawn@develmaycare.com',
+    url='https://github.com/develmaycare/python-scripttease',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
         "jinja2",
         "pygments",
-        "python-myninjas",
+        "superpython",
     ],
     dependency_links=[
-        "https://bitbucket.com/myninjas/python-myninjas/master.tar.gz#python-myninjas",
+        "https://github.com/develmaycare/superpython",
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

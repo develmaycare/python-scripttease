@@ -1,6 +1,11 @@
 # Imports
 
+import logging
 from importlib import import_module
+from .constants import LOGGER_NAME
+from .library.commands import ItemizedCommand
+
+log = logging.getLogger(LOGGER_NAME)
 
 # Exports
 
@@ -25,6 +30,9 @@ class Factory(object):
         self.overlay = None
         self._overlay = overlay
 
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self._overlay)
+
     def get_command(self, name, *args, **kwargs):
         """Get a command.
 
@@ -37,19 +45,19 @@ class Factory(object):
 
         """
         if not self.overlay.command_exists(name):
-            # log.warning("Command does not exist in %s overlay: %s" % (overlay.name, name))
+            log.warning("Command does not exist in %s overlay: %s" % (self._overlay, name))
             return None
 
         callback = self.overlay.MAPPINGS[name]
 
         try:
-            # items = kwargs.pop("items", None)
-            # if items is not None:
-            #     return ItemizedCommand(callback, items, *args, **kwargs)
+            items = kwargs.pop("items", None)
+            if items is not None:
+                return ItemizedCommand(callback, items, *args, **kwargs)
 
             return callback(*args, **kwargs)
-        except (KeyError, TypeError, ValueError) as e:
-            # log.critical("Failed to load %s command: %s" % (name, e))
+        except (KeyError, NameError, TypeError, ValueError) as e:
+            log.critical("Failed to load %s command: %s" % (name, e))
             return None
 
     def load(self):
@@ -62,7 +70,7 @@ class Factory(object):
             self.overlay = import_module("scripttease.library.overlays.%s" % self._overlay)
             self.is_loaded = True
         except ImportError as e:
-            # log.error("The %s overlay could not be imported: %s" % (overlay, str(e)))
+            log.error("The %s overlay could not be imported: %s" % (self._overlay, str(e)))
             pass
 
         return self.is_loaded
