@@ -1,13 +1,13 @@
 # Imports
 
 from superpython.utils import File
-from ..library.overlays import Overlay
+from ..factory import Factory
 from ..library.scripts import Script
 
 # Exports
 
 __all__ = (
-    "Parser"
+    "Parser",
 )
 
 # Classes
@@ -16,18 +16,17 @@ __all__ = (
 class Parser(File):
     """Base class for implementing a command parser."""
 
-    def __init__(self, path, context=None, locations=None, options=None, overlay=None):
+    def __init__(self, path, context=None, locations=None, options=None, overlay="ubuntu"):
         super().__init__(path)
 
         self.context = context
+        self.factory = Factory(overlay)
         self.is_loaded = False
         self.locations = locations or list()
         self.options = options or dict()
-        self.overlay = overlay or Overlay("ubuntu")
+        self.overlay = overlay
         self._commands = list()
         self._functions = list()
-
-        self.overlay.load()
 
     def as_script(self):
         """Convert loaded commands to a script.
@@ -73,4 +72,9 @@ class Parser(File):
         return a
 
     def load(self):
+        """Load the factory and the configuration file.
+
+        :rtype: bool
+
+        """
         raise NotImplementedError()

@@ -1,4 +1,16 @@
+# Imports
+
 from ..commands import Command
+
+# Exports
+
+__all__ = (
+    "COMMON_MAPPINGS",
+    "python_pip",
+    "python_virtualenv",
+)
+
+# Functions
 
 
 def python_pip(name, op="install", upgrade=False, venv=None, **kwargs):
@@ -19,3 +31,10 @@ def python_virtualenv(name="python", **kwargs):
     kwargs.setdefault("comment", "create %s virtual environment" % name)
 
     return Command("virtualenv %s" % name, **kwargs)
+
+# Mappings
+
+COMMON_MAPPINGS = {
+    'pip': python_pip,
+    'virtualenv': python_virtualenv,
+}

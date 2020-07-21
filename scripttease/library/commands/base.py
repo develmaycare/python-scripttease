@@ -2,9 +2,52 @@
 
 
 class Command(object):
+    """A command line statement."""
 
     def __init__(self, statement, comment=None, condition=None, cd=None, environments=None, function=None, prefix=None,
                  register=None, shell=None, stop=False, sudo=None, tags=None, **kwargs):
+        """Initialize a command.
+
+        :param statement: The statement to be executed.
+        :type statement: str
+
+        :param comment: A comment regarding the statement.
+        :type comment: str
+
+        :param condition: A (system-specific) condition for the statement to be executed.
+        :type condition: str
+
+        :param cd: The direction from which the statement should be executed.
+        :type cd: str
+
+        :param environments: A list of target environments where the statement should be executed.
+        :type environments: list[str]
+
+        :param function: The name of the function in which the statement is executed.
+        :type function: str
+
+        :param prefix: A statement to execute before the main statement is executed.
+        :type prefix: str
+
+        :param register: A variable name to use for capture the success for failure of the statement's execution.
+        :type register: str
+
+        :param shell: The shell execute through which the statement is executed.
+        :type shell: str
+
+        :param stop: Indicates process should stop if the statement fails to execute.
+        :type stop: bool | None
+
+        :param sudo: Indicates whether sudo should be invoked for the statement. Given as a bool or user name or
+                     :py:class:`scripttease.library.commands.base.Sudo` instance.
+        :type sudo: bool | str | Sudo
+
+        :param tags: A list of tags describing the statement.
+        :type tags: list[str]
+
+        Additional kwargs are available as dynamic attributes of the Command instance.
+
+        """
         self.comment = comment
         self.condition = condition
         self.cd = cd
@@ -37,11 +80,14 @@ class Command(object):
 
         return "<%s>" % self.__class__.__name__
 
-    def get_statement(self, cd=False):
+    def get_statement(self, cd=False, suppress_comment=False):
         """Get the full statement.
 
         :param cd: Include the directory change, if given.
         :type cd: bool
+
+        :param suppress_comment: Don't include the comment.
+        :type suppress_comment: bool
 
         :rtype: str
 
@@ -65,7 +111,7 @@ class Command(object):
             a.append(")")
 
         b = list()
-        if self.comment is not None:
+        if self.comment is not None and not suppress_comment:
             b.append("# %s" % self.comment)
 
         if self.condition is not None:
@@ -95,12 +141,12 @@ class Command(object):
 
 
 class ItemizedCommand(object):
+    """An itemized command represents multiple commands of with the same statement but different parameters."""
 
-    def __init__(self, command_class, items, *args, **kwargs):
+    def __init__(self, callback, items, *args, **kwargs):
         """Initialize the command.
 
-        :param command_class: The command class to be used.
-        :type command_class: class
+        :param callback: The function to be used to generate the command.
 
         :param items: The command arguments.
         :type items: list[str]
@@ -111,7 +157,7 @@ class ItemizedCommand(object):
 
         """
         self.args = args
-        self.command_class = command_class
+        self.callback = callback
         self.items = items
         self.kwargs = kwargs
 
@@ -119,7 +165,7 @@ class ItemizedCommand(object):
         return self.kwargs.get(item)
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.command_class.__name__)
+        return "<%s %s>" % (self.__class__.__name__, self.callback.__name__)
 
     def get_commands(self):
         """Get the commands to be executed.
@@ -135,7 +181,7 @@ class ItemizedCommand(object):
             for arg in self.args:
                 args.append(arg.replace("$item", item))
 
-            command = self.command_class(*args, **kwargs)
+            command = self.callback(*args, **kwargs)
             a.append(command)
 
         return a
