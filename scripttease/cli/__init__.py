@@ -18,13 +18,13 @@ def main_command():
     """Process script configurations."""
 
     __author__ = "Shawn Davis <shawn@develmaycare.com>"
-    __date__ = "2020-07-21"
+    __date__ = "2020-07-22"
     __help__ = """NOTES
 
 This command is used to parse configuration files and output the commands.
 
     """
-    __version__ = "0.10.0-d"
+    __version__ = "6.0.1-d"
 
     # Main argument parser from which sub-commands are created.
     parser = ArgumentParser(description=__doc__, epilog=__help__, formatter_class=RawDescriptionHelpFormatter)
@@ -160,6 +160,12 @@ This command is used to parse configuration files and output the commands.
     if args.variables:
         context = initialize.context_from_cli(args.variables)
 
+    # Load additional context from file.
+    if args.variables_file:
+        variables = initialize.variable_from_file(args.variables_file)
+        if variables:
+            context.update(variables)
+
     # Handle filters.
     filters = None
     if args.filters:
@@ -170,11 +176,7 @@ This command is used to parse configuration files and output the commands.
     if args.options:
         options = initialize.options_from_cli(args.options)
 
-    if args.variables_file:
-        variables = initialize.variable_from_file(args.variables_file)
-        if variables:
-            context.update(variables)
-
+    # Process the request.
     if args.docs_enabled:
         exit_code = subcommands.output_docs(
             args.path,
