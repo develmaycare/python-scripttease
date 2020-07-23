@@ -18,6 +18,7 @@ __all__ = (
     "move",
     "perms",
     "remove",
+    "rename",
     "rsync",
     "run",
     "scopy",
@@ -371,6 +372,20 @@ def remove(path, force=False, recursive=False, **kwargs):
     return Command(" ".join(statement), **kwargs)
 
 
+def rename(from_name, to_name, **kwargs):
+    """Rename of a file or directory.
+
+    :param from_name: The name (or path) of the existing file.
+    :type from_name: str
+
+    :param to_name: The name (or path) of the new file.
+    :type to_name: str
+
+    """
+    kwargs.setdefault("comment", "rename %s" % from_name)
+    return move(from_name, to_name, **kwargs)
+
+
 def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, links=True, port=22,
           recursive=True, user=None, **kwargs):
     """Initialize the command.
@@ -633,6 +648,7 @@ POSIX_MAPPINGS = {
     'move': move,
     'perms': perms,
     'remove': remove,
+    'rename': rename,
     'rsync': rsync,
     'run': run,
     'scopy': scopy,

@@ -1,4 +1,5 @@
 import pytest
+from scripttease.library.commands.templates import Template
 from scripttease.library.overlays.ubuntu import *
 
 
@@ -84,3 +85,8 @@ def test_system_install():
 def test_system_uninstall():
     c = system_uninstall("lftp")
     assert "apt-get uninstall -y lftp" in c.get_statement()
+
+
+def test_template():
+    t = template("/path/to/source.txt", "/path/to/target.txt")
+    assert isinstance(t, Template)

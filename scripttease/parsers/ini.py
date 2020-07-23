@@ -5,6 +5,8 @@ import logging
 from superpython.utils import parse_jinja_template, read_file, smart_cast, split_csv
 import os
 from ..constants import LOGGER_NAME
+from ..library.commands import ItemizedCommand
+from ..library.commands.templates import Template
 from .base import Parser
 
 log = logging.getLogger(LOGGER_NAME)
@@ -63,6 +65,19 @@ class Config(Parser):
             if command is not None:
                 if isinstance(command, self.factory.overlay.Function):
                     self._functions.append(command)
+                elif isinstance(command, Template):
+                    self._load_template(command)
+                    self._commands.append(command)
+                elif isinstance(command, ItemizedCommand):
+                    itemized_template = False
+                    for c in command.get_commands():
+                        if isinstance(c, Template):
+                            itemized_template = True
+                            self._load_template(c)
+                            self._commands.append(c)
+
+                    if not itemized_template:
+                        self._commands.append(command)
                 else:
                     self._commands.append(command)
 
@@ -141,20 +156,20 @@ class Config(Parser):
             log.error("Failed to parse %s: %s" % (self.path, e))
             return None
 
-    # def _load_template(self, command):
-    #     """Load additional resources for a template command.
-    #
-    #     :param command: The template command.
-    #     :type command: Template
-    #
-    #     """
-    #     # This may produce problems if template kwargs are the same as the given context.
-    #     if self.context is not None:
-    #         command.context.update(self.context)
-    #
-    #     # Custom locations come before default locations.
-    #     command.locations += self.locations
-    #
-    #     # This allows template files to be specified relative to the configuration file.
-    #     command.locations.append(os.path.join(self.directory, "templates"))
-    #     command.locations.append(self.directory)
+    def _load_template(self, command):
+        """Load additional resources for a template command.
+
+        :param command: The template command.
+        :type command: Template
+
+        """
+        # This may produce problems if template kwargs are the same as the given context.
+        if self.context is not None:
+            command.context.update(self.context)
+
+        # Custom locations come before default locations.
+        command.locations += self.locations
+
+        # This allows template files to be specified relative to the configuration file.
+        command.locations.append(os.path.join(self.directory, "templates"))
+        command.locations.append(self.directory)

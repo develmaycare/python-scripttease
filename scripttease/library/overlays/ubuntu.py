@@ -1,6 +1,6 @@
 # Imports
 
-from ..commands import Command
+from ..commands import Command, Template
 from .common import COMMON_MAPPINGS
 from .django import DJANGO_MAPPINGS
 from .pgsql import PGSQL_MAPPINGS
@@ -31,6 +31,7 @@ __all__ = (
     "system_update",
     "system_upgrade",
     "system_uninstall",
+    "template",
     "Function",
 )
 
@@ -181,6 +182,10 @@ def system_upgrade(**kwargs):
     return Command("apt-get upgrade -y", **kwargs)
 
 
+def template(source, target, backup=True, parser=None, **kwargs):
+    return Template(source, target, backup=backup, parser=parser, **kwargs)
+
+
 MAPPINGS = {
     'apache': apache,
     'apache.disable_module': apache_disable_module,
@@ -202,6 +207,7 @@ MAPPINGS = {
     'update': system_update,
     'uninstall': system_uninstall,
     'upgrade': system_upgrade,
+    'template': template,
 }
 
 MAPPINGS.update(COMMON_MAPPINGS)

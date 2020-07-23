@@ -29,6 +29,9 @@ class TestConfig(object):
         c = Config("tests/examples/kitchen_sink.ini")
         assert c.load() is True
 
+        c = Config("tests/examples/kitchen_sink.ini", context={'testing': "yes"})
+        assert c.load() is True
+
         c = Config("tests/examples/bad_command.ini")
         assert c.load() is False
 

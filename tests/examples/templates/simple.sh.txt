@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+
+echo "I am testing? $testing$";
+
+echo "How many times? $times$";

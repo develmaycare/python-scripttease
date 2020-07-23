@@ -18,13 +18,13 @@ def main_command():
     """Process script configurations."""
 
     __author__ = "Shawn Davis <shawn@develmaycare.com>"
-    __date__ = "2020-07-22"
+    __date__ = "2020-07-23"
     __help__ = """NOTES
 
 This command is used to parse configuration files and output the commands.
 
     """
-    __version__ = "6.0.1-d"
+    __version__ = "6.2.0-d"
 
     # Main argument parser from which sub-commands are created.
     parser = ArgumentParser(description=__doc__, epilog=__help__, formatter_class=RawDescriptionHelpFormatter)
