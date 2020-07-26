@@ -8,3 +8,17 @@
     max-width: 100%;
     overflow: visible;
 }
+
+.wy-nav-content {
+    max-width: 100% !important;
+}
+
+/*
+.wy-side-nav-search {
+    background: #506a8a !important;
+}
+
+.wy-side-scroll {
+    background: #6e90b5 !important;
+}
+*/

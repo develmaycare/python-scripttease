@@ -147,15 +147,18 @@ todo_include_todos = True
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-
-def setup(app):
-    # Some csv-table tables in the RTD theme were scrolling horizontally.
-    # See https://github.com/snide/sphinx_rtd_theme/issues/117
-    # Apparently the placement of this function is significant. It wasn't
-    # working at the end of the file.
-    # See https://github.com/syncany/syncany-docs/blob/82166518720051e413231d621c3b23b9ac35cbf6/source/conf.py#L135
-    # app.add_javascript("js/custom.js")
-    app.add_stylesheet("css/custom.css")
+# https://docs.readthedocs.io/en/stable/guides/adding-custom-css.html#adding-custom-css-or-javascript-to-sphinx-documentation
+html_css_files = [
+    "css/custom.css",
+]
+# def setup(app):
+#     # Some csv-table tables in the RTD theme were scrolling horizontally.
+#     # See https://github.com/snide/sphinx_rtd_theme/issues/117
+#     # Apparently the placement of this function is significant. It wasn't
+#     # working at the end of the file.
+#     # See https://github.com/syncany/syncany-docs/blob/82166518720051e413231d621c3b23b9ac35cbf6/source/conf.py#L135
+#     # app.add_javascript("js/custom.js")
+#     app.add_stylesheet("css/custom.css")
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied

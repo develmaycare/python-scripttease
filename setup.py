@@ -16,10 +16,11 @@ setup(
     version=read_file("VERSION.txt"),
     description=read_file("DESCRIPTION.txt"),
     long_description=read_file("README.markdown"),
+    long_description_content_type="text/markdown",
     author='Shawn Davis',
     author_email='shawn@develmaycare.com',
     url='https://github.com/develmaycare/python-scripttease',
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     include_package_data=True,
     install_requires=[
         "jinja2",
