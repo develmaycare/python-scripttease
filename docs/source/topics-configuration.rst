@@ -1,4 +1,4 @@
-.. _configuration:
+.. _topics-configuration:
 
 *************
 Configuration
@@ -40,6 +40,8 @@ Notes regarding this format:
 - ``yes`` and ``no`` are interpreted as boolean values.
 - List values, where required, are separated by commas.
 
+.. _topics-configuration-common-parameters:
+
 Common Parameters
 -----------------
 
@@ -75,13 +77,6 @@ Example of an "itemized" command:
 
 .. note::
     Command itemization may vary with the command type.
-
-Available Commands
-------------------
-
-The following commands instantiate command instances. Each example is shown with the defaults.
-
-.. include:: _command-examples.rst
 
 Pre-Parsing Command Files as Templates
 ======================================
@@ -121,34 +116,7 @@ Then with a config instance:
 Using the Tease Command
 =======================
 
-The ``tease`` command may be used to parse a configuration file, providing additional utilities for working with
-commands.
-
-.. code-block:: text
-
-positional arguments:
-  path                  The path to the configuration file.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -c, --color           Enable code highlighting for terminal output.
-  -C= VARIABLES, --context= VARIABLES
-                        Context variables for use in pre-parsing the config and templates. In the form of: name:value
-  -d, --docs            Output documentation instead of code.
-  -D, --debug           Enable debug output.
-  -f= FILTERS, --filter= FILTERS
-                        Filter the commands in the form of: attribute:value
-  -O= OPTIONS, --option= OPTIONS
-                        Common command options in the form of: name:value
-  -s, --script          Output commands as a script.
-  -T= TEMPLATE_LOCATIONS, --template-path= TEMPLATE_LOCATIONS
-                        The location of template files that may be used with the template command.
-  -w= OUTPUT_FILE, --write= OUTPUT_FILE
-                        Write the output to disk.
-  -V= VARIABLES_FILE, --variables-file= VARIABLES_FILE
-                        Load variables from a file.
-  -v                    Show version number and exit.
-  --version             Show verbose version information and exit.
+The ``tease`` command may be used to parse a configuration file, providing additional utilities for working with commands. See :ref:`commands`.
 
 The ``path`` argument defaults to ``commands.ini``.
 

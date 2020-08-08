@@ -107,6 +107,11 @@ def test_remove():
     assert "/path/to/dir" in s
 
 
+def test_rename():
+    c = rename("/path/to/file.txt", "/path/to/renamed.txt")
+    assert "mv /path/to/file.txt /path/to/renamed.txt" in c.get_statement()
+
+
 def test_rsync():
     c = rsync(
         "/path/to/local/",

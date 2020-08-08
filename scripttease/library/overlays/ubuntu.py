@@ -37,10 +37,23 @@ __all__ = (
 
 
 def command_exists(name):
+    """Indicates whether a given command exists in this overaly.
+
+    :param name: The name of the command.
+    :type name: str
+
+    :rtype: bool
+
+    """
     return name in MAPPINGS
 
 
 def apache(op, **kwargs):
+    """Execute an Apache-related command.
+
+    - op (str): The operation to perform; reload, restart, start, stop, test.
+
+    """
     if op == "reload":
         return apache_reload(**kwargs)
     elif op == "restart":
@@ -56,24 +69,43 @@ def apache(op, **kwargs):
 
 
 def apache_disable_module(name, **kwargs):
+    """Disable an Apache module.
+
+    - name (str): The module name.
+
+    """
     kwargs.setdefault("comment", "disable %s apache module" % name)
 
     return Command("a2dismod %s" % name, **kwargs)
 
 
 def apache_disable_site(name, **kwargs):
+    """Disable an Apache site.
+
+    - name (str): The domain name.
+
+    """
     kwargs.setdefault("comment", "disable %s apache site" % name)
 
     return Command("a2dissite %s" % name, **kwargs)
 
 
 def apache_enable_module(name, **kwargs):
+    """Enable an Apache module.
+
+    - name (str): The module name.
+
+    """
     kwargs.setdefault("comment", "enable %s apache module" % name)
 
     return Command("a2enmod %s" % name, **kwargs)
 
 
 def apache_enable_site(name, **kwargs):
+    """Enable an Apache site.
+
+
+    """
     kwargs.setdefault("comment", "enable %s apache module" % name)
 
     return Command("a2ensite %s" % name, **kwargs)
@@ -114,6 +146,11 @@ def apache_test(**kwargs):
 
 
 def service_reload(name, **kwargs):
+    """Reload a service.
+
+    - name (str): The service name.
+
+    """
     kwargs.setdefault("comment", "reload %s service" % name)
     kwargs.setdefault("register", "%s_reloaded" % name)
 
@@ -121,6 +158,11 @@ def service_reload(name, **kwargs):
 
 
 def service_restart(name, **kwargs):
+    """Restart a service.
+
+    - name (str): The service name.
+
+    """
     kwargs.setdefault("comment", "restart %s service" % name)
     kwargs.setdefault("register", "%s_restarted" % name)
 
@@ -128,6 +170,11 @@ def service_restart(name, **kwargs):
 
 
 def service_start(name, **kwargs):
+    """Start a service.
+
+    - name (str): The service name.
+
+    """
     kwargs.setdefault("comment", "start %s service" % name)
     kwargs.setdefault("register", "%s_started" % name)
 
@@ -135,6 +182,11 @@ def service_start(name, **kwargs):
 
 
 def service_stop(name, **kwargs):
+    """Stop a service.
+
+    - name (str): The service name.
+
+    """
     kwargs.setdefault("comment", "stop %s service" % name)
     kwargs.setdefault("register", "%s_stopped" % name)
 
@@ -142,6 +194,11 @@ def service_stop(name, **kwargs):
 
 
 def system(op, **kwargs):
+    """Perform a system operation.
+
+    - op (str): The operation to perform; reboot, update, upgrade.
+
+    """
     if op == "reboot":
         return system_reboot(**kwargs)
     elif op == "update":
@@ -153,6 +210,11 @@ def system(op, **kwargs):
 
 
 def system_install(name, **kwargs):
+    """Install a system-level package.
+
+    - name (str): The name of the package to install.
+
+    """
     kwargs.setdefault("comment", "install system package %s" % name)
 
     return Command("apt-get install -y %s" % name, **kwargs)
@@ -165,6 +227,11 @@ def system_reboot(**kwargs):
 
 
 def system_uninstall(name, **kwargs):
+    """Uninstall a system-level package.
+
+    - name (str): The name of the package to uninstall.
+
+    """
     kwargs.setdefault("comment", "remove system package %s" % name)
 
     return Command("apt-get uninstall -y %s" % name, **kwargs)
@@ -183,6 +250,14 @@ def system_upgrade(**kwargs):
 
 
 def template(source, target, backup=True, parser=None, **kwargs):
+    """Create a file from a template.
+
+    - source (str): The path to the template file.
+    - target (str): The path to where the new file should be created.
+    - backup (bool): Indicates whether a backup should be made if the target file already exists.
+    - parser (str): The parser to use ``jinja`` (the default) or ``simple``.
+
+    """
     return Template(source, target, backup=backup, parser=parser, **kwargs)
 
 

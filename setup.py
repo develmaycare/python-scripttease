@@ -22,9 +22,8 @@ setup(
     url='https://github.com/develmaycare/python-scripttease',
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
+    # superpython provides jinja2 and pygments
     install_requires=[
-        "jinja2",
-        "pygments",
         "superpython",
     ],
     dependency_links=[
@@ -43,6 +42,7 @@ setup(
     zip_safe=False,
     tests_require=[
         "coverage",
+        "pytest",
     ],
     test_suite='runtests.runtests',
     entry_points={

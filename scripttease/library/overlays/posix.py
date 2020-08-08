@@ -20,7 +20,6 @@ __all__ = (
     "remove",
     "rename",
     "rsync",
-    "run",
     "scopy",
     "sed",
     "symlink",
@@ -35,34 +34,12 @@ def archive(from_path, absolute=False, exclude=None, file_name="archive.tgz", st
             **kwargs):
     """Create a file archive.
 
-    :param from_path: The path that should be archived.
-    :type from_path: str
-
-    :param absolute: By default, the leading slash is stripped from each path. Set to ``True`` to preserve the
-                     absolute path.
-    :type absolute: bool
-
-    :param bzip2: Compress using bzip2.
-    :type bzip2: bool
-
-    :param exclude: A pattern to be excluded from the archive.
-    :type exclude: str
-
-    :param format: The command to use for the operation.
-    :type format: str
-
-    :param gzip: Compress using gzip.
-    :type gzip: bool
-
-    :param strip: Remove the specified number of leading elements from the path. Paths with fewer elements will be
-                  silently skipped.
-    :type strip: int
-
-    :param to_path: Where the archive should be created. This should *not* include the file name.
-    :type to_path: str
-
-    :param view: View the output of the command as it happens.
-    :type view: bool
+    - from_path (str): The path that should be archived.
+    - absolute (bool): Set to ``True`` to preserve the leading slash.
+    - exclude (str): A pattern to be excluded from the archive.
+    - strip (int): Remove the specified number of leading elements from the path.
+    - to_path (str): Where the archive should be created. This should *not* include the file name.
+    - view (bool): View the output of the command as it happens.
 
     """
     tokens = ["tar"]
@@ -93,14 +70,9 @@ def archive(from_path, absolute=False, exclude=None, file_name="archive.tgz", st
 def certbot(domain_name, email=None, webroot=None, **kwargs):
     """Get new SSL certificate from Let's Encrypt.
 
-    :param domain_name: The domain name for which the SSL certificate is requested.
-    :type domain_name: str
-
-    :param email: The email address of the requester sent to the certificate authority. Required.
-    :type email: str
-
-    :param webroot: The directory where the challenge file will be created.
-    :type webroot: str
+    - domain_name (str): The domain name for which the SSL certificate is requested.
+    - email (str): The email address of the requester sent to the certificate authority. Required.
+    - webroot (str): The directory where the challenge file will be created.
 
     """
     _email = email or os.environ.get("SCRIPTTEASE_CERTBOT_EMAIL", None)
@@ -122,25 +94,12 @@ def certbot(domain_name, email=None, webroot=None, **kwargs):
 def extract(from_path, absolute=False, exclude=None, strip=None, to_path=None, view=False, **kwargs):
     """Extract a file archive.
 
-    :param from_path: The path to the archive file.
-    :type from_path: str
-
-    :param absolute: By default, the leading slash is stripped from each path. Set to ``True`` to preserve the
-                     absolute path.
-    :type absolute: bool
-
-    :param exclude: A pattern to be excluded from the archive.
-    :type exclude: str
-
-    :param strip: Remove the specified number of leading elements from the path. Paths with fewer elements will be
-                  silently skipped.
-    :type strip: int
-
-    :param to_path: Where the archive should be extracted.
-    :type to_path: str
-
-    :param view: View the output of the command as it happens.
-    :type view: bool
+    - from_path (str): The path that should be archived.
+    - absolute (bool): Set to ``True`` to preserve the leading slash.
+    - exclude (str): A pattern to be excluded from the archive.
+    - strip (int): Remove the specified number of leading elements from the path.
+    - to_path (str): Where the archive should be extracted. This should *not* include the file name.
+    - view (bool): View the output of the command as it happens.
 
     """
     _to_path = to_path or "./"
@@ -172,11 +131,8 @@ def extract(from_path, absolute=False, exclude=None, strip=None, to_path=None, v
 def file_append(path, content=None, **kwargs):
     """Append content to a file.
 
-    :param path: The path to the file.
-    :type path: str
-
-    :param content: The content to be appended.
-    :type content: str
+    - path (str): The path to the file.
+    - content (str): The content to be appended.
 
     """
     kwargs.setdefault("comment", "append to %s" % path)
@@ -187,19 +143,12 @@ def file_append(path, content=None, **kwargs):
 
 
 def file_copy(from_path, to_path, overwrite=False, recursive=False, **kwargs):
-    """Initialize the command.
+    """Copy a file or directory.
 
-    :param from_path: The file or directory to be copied.
-    :type from_path: str
-
-    :param to_path: The location to which the file or directory should be copied.
-    :type to_path: str
-
-    :param overwrite: Indicates files and directories should be overwritten if they exist.
-    :type overwrite: bool
-
-    :param recursive: Copy sub-directories.
-    :type recursive: bool
+    - from_path (str): The file or directory to be copied.
+    - to_path (str): The location to which the file or directory should be copied.
+    - overwrite (bool): Indicates files and directories should be overwritten if they exist.
+    - recursive (bool): Copy sub-directories.
 
     """
     kwargs.setdefault("comment", "copy %s to %s" % (from_path, to_path))
@@ -220,13 +169,10 @@ def file_copy(from_path, to_path, overwrite=False, recursive=False, **kwargs):
 
 
 def file_write(path, content=None, **kwargs):
-    """Initialize the command.
+    """Write to a file.
 
-    :param path: The file to be written.
-    :type path: str
-
-    :param content: The content to be written. Note: If omitted, this command is equivalent to :py:class:`Touch`.
-    :type content: str
+    - path (str): The file to be written.
+    - content (str): The content to be written. Note: If omitted, this command is equivalent to ``touch``.
 
     """
     _content = content or ""
@@ -246,16 +192,11 @@ def file_write(path, content=None, **kwargs):
 
 
 def mkdir(path, mode=None, recursive=True, **kwargs):
-    """Initialize the command.
+    """Create a directory.
 
-    :param path: The path to be created.
-    :type path: str
-
-    :param mode: The access permissions of the new directory.
-    :type mode: int | str
-
-    :param recursive: Create all directories along the path.
-    :type recursive: bool
+    - path (str): The path to be created.
+    - mode (int | str): The access permissions of the new directory.
+    - recursive (bool): Create all directories along the path.
 
     """
     kwargs.setdefault("comment", "create directory %s" % path)
@@ -273,6 +214,12 @@ def mkdir(path, mode=None, recursive=True, **kwargs):
 
 
 def move(from_path, to_path, **kwargs):
+    """Move a file or directory.
+    
+    - from_path (str): The current path.
+    - to_path (str): The new path.
+    
+    """
     kwargs.setdefault("comment", "move %s to %s" % (from_path, to_path))
     statement = "mv %s %s" % (from_path, to_path)
 
@@ -280,22 +227,13 @@ def move(from_path, to_path, **kwargs):
 
 
 def perms(path, group=None, mode=None, owner=None, recursive=False, **kwargs):
-    """Initialize the command.
+    """Set permissions on a file or directory.
 
-    :param path: The path to be changed.
-    :type path: str
-
-    :param group: The name of the group to be applied.
-    :type group: str
-
-    :param mode: The access permissions of the file or directory.
-    :type mode: int | str
-
-    :param owner: The name of the user to be applied.
-    :type owner: str
-
-    :param recursive: Create all directories along the path.
-    :type recursive: bool
+    - path (str): The path to be changed.
+    - group (str): The name of the group to be applied.
+    - mode (int | str): The access permissions of the file or directory.
+    - owner (str): The name of the user to be applied.
+    - recursive: Create all directories along the path.
 
     """
     commands = list()
@@ -345,16 +283,11 @@ def perms(path, group=None, mode=None, owner=None, recursive=False, **kwargs):
 
 
 def remove(path, force=False, recursive=False, **kwargs):
-    """Initialize the command.
+    """Remove a file or directory.
 
-    :param path: The path to be removed.
-    :type path: str
-
-    :param force: Force the removal.
-    :type force: bool
-
-    :param recursive: Remove all directories along the path.
-    :type recursive: bool
+    - path (str): The path to be removed.
+    - force (bool): Force the removal.
+    - recursive (bool): Remove all directories along the path.
 
     """
     kwargs.setdefault("comment", "remove %s" % path)
@@ -373,13 +306,10 @@ def remove(path, force=False, recursive=False, **kwargs):
 
 
 def rename(from_name, to_name, **kwargs):
-    """Rename of a file or directory.
+    """Rename a file or directory.
 
-    :param from_name: The name (or path) of the existing file.
-    :type from_name: str
-
-    :param to_name: The name (or path) of the new file.
-    :type to_name: str
+    - from_name (str): The name (or path) of the existing file.
+    - to_name (str): The name (or path) of the new file.
 
     """
     kwargs.setdefault("comment", "rename %s" % from_name)
@@ -388,41 +318,21 @@ def rename(from_name, to_name, **kwargs):
 
 def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, links=True, port=22,
           recursive=True, user=None, **kwargs):
-    """Initialize the command.
+    """Synchronize a directory structure.
 
-    :param source: The source directory.
-    :type source: str
-
-    :param target: The target directory.
-    :type target: str
-
-    :param delete: Indicates target files that exist in source but not in target should be removed.
-    :type delete: bool
-
-    :param exclude: The path to an exclude file.
-    :type exclude: str
-
-    :param host: The host name or IP address. This causes the command to run over SSH and may require a
-                 ``key_file``, ``port``, and ``user``.
-    :type host: str
-
-    :param key_file: The path to the private SSH key to use for remove connections. User expansion is
-                     automatically applied.
-    :type key_file: str
-
-    :param links: Include symlinks in the sync.
-    :type links: bool
-
-    :param port: The SSH port to use for remote connections.
-    :type port: int
-
-    :param recursive: Indicates source contents should be recursively synchronized.
-    :type recursive: bool
-
-    :param user: The user name to use for remote connections.
+    - source (str): The source directory.
+    - target (str): The target directory.
+    - delete (bool): Indicates target files that exist in source but not in target should be removed.
+    - exclude (str): The path to an exclude file.
+    - host (str): The host name or IP address. This causes the command to run over SSH.
+    - key_file (str): The privacy SSH key (path) for remote connections. User expansion is automatically applied.
+    - links (bool): Include symlinks in the sync.
+    - port (int): The SSH port to use for remote connections.
+    - recursive (bool): Indicates source contents should be recursively synchronized.
+    - user (str): The user name to use for remote connections.
 
     """
-    # :param guess: When ``True``, the ``host``, ``key_file``, and ``user`` will be guessed based on the base name of
+    # - guess: When ``True``, the ``host``, ``key_file``, and ``user`` will be guessed based on the base name of
     #               the source path.
     # :type guess: bool
     # if guess:
@@ -434,7 +344,7 @@ def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, 
     #     key_file = key_file
     #     user = user
 
-    kwargs.setdefault("comment", "copy %s to remote %s" % (source, target))
+    kwargs.setdefault("comment", "sync %s with %s" % (source, target))
 
     # rsync -e "ssh -i $(SSH_KEY) -p $(SSH_PORT)" -P -rvzc --delete
     # $(OUTPUTH_PATH) $(SSH_USER)@$(SSH_HOST):$(UPLOAD_PATH) --cvs-exclude;
@@ -478,75 +388,50 @@ def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, 
     return Command(statement, **kwargs)
 
 
-def run(statement, **kwargs):
-    """Run any statement."""
-    kwargs.setdefault("comment", "run statement")
-    return Command(statement, **kwargs)
-
-
 def scopy(from_path, to_path, host=None, key_file=None, port=22, user=None, **kwargs):
-        """Initialize the command.
+    """Copy a file or directory to a remote server.
 
-        :param from_path: The source directory.
-        :type from_path: str
+    - from_path (str): The source directory.
+    - to_path (str): The target directory.
+    - host (str): The host name or IP address. Required.
+    - key_file (str): The privacy SSH key (path) for remote connections. User expansion is automatically applied.
+    - port (int): The SSH port to use for remote connections.
+    - user (str): The user name to use for remote connections.
 
-        :param to_path: The target directory.
-        :type to_path: str
+    """
+    kwargs.setdefault("comment", "copy %s to remote %s" % (from_path, to_path))
 
-        :param host: The host name or IP address. Required.
-        :type host: str
+    # TODO: What to do to force local versus remote commands?
+    # kwargs['local'] = True
 
-        :param key_file: The path to the private SSH key to use for remove connections. User expansion is
-                         automatically applied.
-        :type key_file: str
+    kwargs['sudo'] = False
 
-        :param port: The SSH port to use for remote connections.
-        :type port: int
+    statement = ["scp"]
 
-        :param user: The user name to use for remote connections.
+    if key_file is not None:
+        statement.append("-i %s" % key_file)
 
-        """
-        kwargs.setdefault("comment", "copy %s to remote %s" % (from_path, to_path))
+    statement.append("-P %s" % port)
+    statement.append(from_path)
 
-        # TODO: What to do to force local versus remote commands?
-        # kwargs['local'] = True
+    if host is not None and user is not None:
+        statement.append("%s@%s:%s" % (user, host, to_path))
+    elif host is not None:
+        statement.append("%s:%s" % (host, to_path))
+    else:
+        raise ValueError("Host is a required keyword argument.")
 
-        kwargs['sudo'] = False
-
-        statement = ["scp"]
-
-        if key_file is not None:
-            statement.append("-i %s" % key_file)
-
-        statement.append("-P %s" % port)
-        statement.append(from_path)
-
-        if host is not None and user is not None:
-            statement.append("%s@%s:%s" % (user, host, to_path))
-        elif host is not None:
-            statement.append("%s:%s" % (host, to_path))
-        else:
-            raise ValueError("Host is a required keyword argument.")
-
-        return Command(" ".join(statement), **kwargs)
+    return Command(" ".join(statement), **kwargs)
 
 
 def sed(path, backup=".b", delimiter="/", find=None, replace=None, **kwargs):
     """Find and replace text in a file.
 
-    :param path: The path to the file to be edited.
-    :type path: str
-
-    :param backup: The backup file extension to use.
-    :type backup: str
-
-    :param delimiter: The pattern delimiter.
-
-    :param find: The old text. Required.
-    :type find: str
-
-    :param replace: The new text. Required.
-    :type replace: str
+    - path (str): The path to the file to be edited.
+    - backup (str): The backup file extension to use.
+    - delimiter (str): The pattern delimiter.
+    - find (str): The old text. Required.
+    - replace (str): The new text. Required.
 
     """
 
@@ -568,16 +453,11 @@ def sed(path, backup=".b", delimiter="/", find=None, replace=None, **kwargs):
 
 
 def symlink(source, force=False, target=None, **kwargs):
-    """Initialize the command.
+    """Create a symlink.
 
-    :param source: The source of the link.
-    :type source: str
-
-    :param force: Force the creation of the link.
-    :type force: bool
-
-    :param target: The name or path of the target. Defaults to the base name of the source path.
-    :type target: str
+    - source (str): The source of the link.
+    - force (bool): Force the creation of the link.
+    - target (str): The name or path of the target. Defaults to the base name of the source path.
 
     """
     _target = target or os.path.basename(source)
@@ -596,10 +476,9 @@ def symlink(source, force=False, target=None, **kwargs):
 
 
 def touch(path, **kwargs):
-    """Initialize the command.
+    """Touch a file or directory.
 
-    :param path: The file or directory to touch.
-    :type path: str
+    - path (str): The file or directory to touch.
 
     """
     kwargs.setdefault("comment", "touch %s" % path)
@@ -643,14 +522,13 @@ POSIX_MAPPINGS = {
     'copy': file_copy,
     'extract': extract,
     'func': Function,
-    'function': Function,
+    # 'function': Function,
     'mkdir': mkdir,
     'move': move,
     'perms': perms,
     'remove': remove,
     'rename': rename,
     'rsync': rsync,
-    'run': run,
     'scopy': scopy,
     'sed': sed,
     'ssl': certbot,

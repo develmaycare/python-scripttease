@@ -54,7 +54,8 @@ clean:
 
 .PHONY: html
 html:
-	#./generate_command_signatures.py > source/_command-examples.rst
+	resrc pkg docs -I ../packages.ini -O rst --no-heading > source/_includes/project-dependencies.rst;
+	./generate_command_signatures.py > source/_includes/overlays.rst
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

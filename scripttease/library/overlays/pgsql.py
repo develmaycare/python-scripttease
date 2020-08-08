@@ -19,6 +19,25 @@ __all__ = (
 
 
 def _get_pgsql_command(name, host="localhost", password=None, port=5432, user="postgres"):
+    """Get a postgres-related command using commonly required parameters.
+
+    :param name: The name of the command.
+    :type name: str
+
+    :param host: The host name.
+    :type host: str
+
+    :param password: The password to use.
+    :type password: str
+
+    :param port: The TCP port number.
+    :type port: int
+
+    :param user: The user name that will be used to execute the command.
+
+    :rtype: list[str]
+
+    """
     a = list()
 
     if password:
@@ -37,26 +56,13 @@ def pg_create_database(name, admin_pass=None, admin_user="postgres", host="local
                        template=None, **kwargs):
     """Create a PostgreSQL database.
 
-    :param name: The database name.
-    :type name: str
-
-    :param admin_pass: The password for the user with sufficient access privileges to execute the command.
-    :type admin_pass: str
-
-    :param admin_user: The name of the user with sufficient access privileges to execute the command.
-    :type admin_user: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param owner: The owner (user/role name) of the new database.
-    :type owner: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
-
-    :param template: The database template name to use, if any.
-    :type template: str
+    - name (str): The database name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - owner (str): The owner (user/role name) of the new database.
+    - port (int): The port number of the Postgres service running on the host.
+    - template (str): The database template name to use, if any.
 
     """
     _owner = owner or admin_user
@@ -79,23 +85,11 @@ def pg_create_database(name, admin_pass=None, admin_user="postgres", host="local
 def pg_create_user(name, admin_pass=None, admin_user="postgres", host="localhost", password=None, port=5432, **kwargs):
     """Create a PostgreSQL user.
 
-    :param name: The user name.
-    :type name: str
-
-    :param admin_pass: The password for the user with sufficient access privileges to execute the command.
-    :type admin_pass: str
-
-    :param admin_user: The name of the user with sufficient access privileges to execute the command.
-    :type admin_user: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param password: The password for the new user.
-    :type password: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
+    - name (str): The user name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - port (int): The port number of the Postgres service running on the host.
 
     """
     # Postgres commands always run without sudo because the -U may be provided.
@@ -116,20 +110,12 @@ def pg_create_user(name, admin_pass=None, admin_user="postgres", host="localhost
 def pg_database_exists(name, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
     """Determine if a Postgres database exists.
 
-    :param name: The database name.
-    :type name: str
-
-    :param admin_pass: The password for the user with sufficient access privileges to execute the command.
-    :type admin_pass: str
-
-    :param admin_user: The name of the user with sufficient access privileges to execute the command.
-    :type admin_user: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
+    - name (str): The database name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - owner (str): The owner (user/role name) of the new database.
+    - port (int): The port number of the Postgres service running on the host.
 
     """
     # Postgres commands always run without sudo because the -U may be provided. However, sudo may be required for
@@ -147,20 +133,11 @@ def pg_database_exists(name, admin_pass=None, admin_user="postgres", host="local
 def pg_drop_database(name, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
     """Remove a PostgreSQL database.
 
-    :param name: The database name.
-    :type name: str
-
-    :param admin_pass: The password for the user with sufficient access privileges to execute the command.
-    :type admin_pass: str
-
-    :param admin_user: The name of the user with sufficient access privileges to execute the command.
-    :type admin_user: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
+    - name (str): The database name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - port (int): The port number of the Postgres service running on the host.
 
     """
     # Postgres commands always run without sudo because the -U may be provided.
@@ -176,20 +153,11 @@ def pg_drop_database(name, admin_pass=None, admin_user="postgres", host="localho
 def pg_drop_user(name, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
     """Remove a Postgres user.
 
-    :param name: The user name.
-    :type name: str
-
-    :param admin_pass: The password for the user with sufficient access privileges to execute the command.
-    :type admin_pass: str
-
-    :param admin_user: The name of the user with sufficient access privileges to execute the command.
-    :type admin_user: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
+    - name (str): The user name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - port (int): The port number of the Postgres service running on the host.
 
     """
     # Postgres commands always run without sudo because the -U may be provided.
@@ -206,24 +174,12 @@ def pg_dump_database(name, admin_pass=None, admin_user="postgres", file_name=Non
                      **kwargs):
     """Export a Postgres database.
 
-    :param name: The database name.
-    :type name: str
-
-    :param admin_pass: The password for the user with sufficient access privileges to execute the command.
-    :type admin_pass: str
-
-    :param admin_user: The name of the user with sufficient access privileges to execute the command.
-    :type admin_user: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param file_name: The name (including the path, if desired) of the export file. Defaults to the
-                      ``database_name`` plus ".sql"
-    :type file_name: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
+    - name (str): The database name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - file_name (str): The name/path of the export file. Defaults the database name plus ``.sql``.
+    - host (str): The database host name or IP address.
+    - port (int): The port number of the Postgres service running on the host.
 
     """
     _file_name = file_name or "%s.sql" % name
@@ -243,23 +199,12 @@ def pg_dump_database(name, admin_pass=None, admin_user="postgres", file_name=Non
 def psql(sql, database="template1", host="localhost", password=None, port=5432, user="postgres", **kwargs):
     """Execute a psql command.
 
-    :param sql: The SQL to be executed.
-    :type sql: str
-
-    :param database: The database name.
-    :type database: str
-
-    :param password: The password for the user with sufficient access privileges to execute the command.
-    :type password: str
-
-    :param host: The database host name or IP address.
-    :type host: str
-
-    :param port: The port number of the Postgres service running on the host.
-    :type port: int
-
-    :param user: The name of the user with sufficient access privileges to execute the command.
-    :type user: str
+    - sql (str): The SQL to be executed.
+    - database (str): The database name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - port (int): The port number of the Postgres service running on the host.
 
     """
     # Postgres commands always run without sudo because the -U may be provided.

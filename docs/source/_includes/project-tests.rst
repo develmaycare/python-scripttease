@@ -1,19 +1,15 @@
-*****
-Tests
-*****
-
 Coverage Requirements
-=====================
+---------------------
 
 100% coverage is required for the ``master`` branch.
 
 See `current coverage report <coverage/index.html>`_.
 
 .. csv-table:: Lines of Code
-    :file: _data/cloc.csv
+    :file: ../_data/cloc.csv
 
 Set Up for Testing
-==================
+------------------
 
 Install requirements:
 
@@ -22,7 +18,7 @@ Install requirements:
     pip install tests/requirements.pip
 
 Running Tests
-=============
+.............
 
 .. tip::
     You may use the ``tests`` target of the ``Makefile`` to run tests with coverage:
@@ -48,7 +44,7 @@ To allow output from print statements within a test method, add the ``-s`` switc
     python -m pytest -s tests/units/path/to/test.py
 
 Reference
-=========
+---------
 
 - `coverage <https://coverage.readthedocs.io/en/v4.5.x/>`_
 - `pytest <https://pytest.org>`_

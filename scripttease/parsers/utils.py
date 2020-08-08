@@ -27,8 +27,8 @@ def filter_commands(commands, environments=None, tags=None):
     :type environments: list[str]
      
     :param tags: Tag names to be matched.
-    :type tags
-    :return: 
+    :type tags: list[str]
+
     """
     filtered = list()
     for command in commands:

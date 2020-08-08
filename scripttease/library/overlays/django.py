@@ -19,6 +19,19 @@ __all__ = (
 
 
 def _django(name, *args, venv=None, **kwargs):
+    """Process a django-based command.
+
+    :param name: The name of the management command.
+    :type name: str
+
+    :param venv: The virtual environment to use.
+    :type venv: str
+
+    args and kwargs are used to instantiate the command instance.
+
+    This exists because we need ``django()`` to serve as an interface for any management command.
+
+    """
     if venv is not None:
         kwargs['prefix'] = "source %s/bin/activate" % venv
 
@@ -59,6 +72,14 @@ def _django(name, *args, venv=None, **kwargs):
 
 
 def django(name, *args, venv=None, **kwargs):
+    """Run any Django management command.
+
+    - name (str): The name of the management command.
+    - venv (str): The of the virtual environment to use.
+
+    args are passed as positional arguments, while kwargs are given as switches.
+
+    """
     if name == "check":
         return django_check(venv=venv, **kwargs)
     elif name in ("collectstatic", "static"):
@@ -70,6 +91,11 @@ def django(name, *args, venv=None, **kwargs):
 
 
 def django_check(venv=None, **kwargs):
+    """Run the Django check command.
+
+    - venv (str): The of the virtual environment to use.
+
+    """
     kwargs.setdefault("comment", "run django checks")
     kwargs.setdefault("register", "django_checks_out")
 
@@ -77,6 +103,11 @@ def django_check(venv=None, **kwargs):
 
 
 def django_collect_static(venv=None, **kwargs):
+    """Collect static files.
+
+    - venv (str): The of the virtual environment to use.
+
+    """
     kwargs.setdefault("comment", "collect static files")
 
     return _django("collectstatic", venv=venv, **kwargs)
@@ -84,25 +115,16 @@ def django_collect_static(venv=None, **kwargs):
 
 def django_dumpdata(app_name, base_path="local", file_name="initial", indent=4, natural_foreign=False,
                     natural_primary=False, path=None, venv=None, **kwargs):
-    """Initialize the command.
+    """Dump data from the database.
 
-        :param app_name: The name (app label) of the app. ``app_label.ModelName`` may also be given.
-        :type app_name: str
-
-        :param file_name: The file name to which the data will be dumped.
-        :type file_name: str
-
-        :param indent: Indentation of the exported fixtures.
-        :type indent: int
-
-        :param natural_foreign: Use the natural foreign parameter.
-        :type natural_foreign: bool
-
-        :param natural_primary: Use the natural primary parameter.
-        :type natural_primary: bool
-
-        :param path: The path to the data file.
-        :type path: str
+    - app_name (str): The name (app label) of the app. ``app_label.ModelName`` may also be given.
+    - base_path (str): The path under which apps are located in source.
+    - file_name (str): The file name to which the data will be dumped.
+    - indent (int): Indentation of the exported fixtures.
+    - natural_foreign (bool): Use the natural foreign parameter.
+    - natural_primary (bool): Use the natural primary parameter.
+    - path (str): The path to the data file.
+    - venv (str): The of the virtual environment to use.
 
     """
     kwargs.setdefault("comment", "export fixtures for %s" % app_name)
@@ -125,16 +147,13 @@ def django_dumpdata(app_name, base_path="local", file_name="initial", indent=4, 
 
 
 def django_loaddata(app_name, base_path="local", file_name="initial", path=None, venv=None, **kwargs):
-    """Initialize the command.
+    """Load data into the database.
 
-    :param app_name: The name (app label) of the app.
-    :type app_name: str
-
-    :param file_name: The file name to which the data will be dumped.
-    :type file_name: str
-
-    :param path: The path to the data file.
-    :type path: str
+    - app_name (str): The name (app label) of the app. ``app_label.ModelName`` may also be given.
+    - base_path (str): The path under which apps are located in source.
+    - file_name (str): The file name to which the data will be dumped.
+    - path (str): The path to the data file.
+    - venv (str): The of the virtual environment to use.
 
     """
     kwargs.setdefault("comment", "load fixtures for %s" % app_name)
@@ -147,6 +166,11 @@ def django_loaddata(app_name, base_path="local", file_name="initial", path=None,
 
 
 def django_migrate(venv=None, **kwargs):
+    """Apply database migrations.
+
+    - venv (str): The of the virtual environment to use.
+
+    """
     kwargs.setdefault("comment", "run django database migrations")
 
     return _django("migrate", venv=venv, **kwargs)
