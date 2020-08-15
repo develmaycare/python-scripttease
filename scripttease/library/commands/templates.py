@@ -65,7 +65,7 @@ class Template(Command):
         self.pythonic = pythonic
         self.line_by_line = lines
         self.locations = kwargs.pop("locations", list())
-        self.source = source
+        self.source = os.path.expanduser(source)
         self.target = target
 
         # Remaining kwargs are added to the context.
