@@ -24,9 +24,9 @@ def python_pip(name, op="install", upgrade=False, venv=None, **kwargs):
 
     """
     if upgrade:
-        statement = "pip install --upgrade -y %s" % name
+        statement = "pip install --upgrade %s" % name
     else:
-        statement = "pip %s -y %s" % (op, name)
+        statement = "pip %s %s" % (op, name)
 
     if venv is not None:
         kwargs['prefix'] = "source %s/bin/activate" % venv
