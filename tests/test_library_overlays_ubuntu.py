@@ -90,3 +90,16 @@ def test_system_uninstall():
 def test_template():
     t = template("/path/to/source.txt", "/path/to/target.txt")
     assert isinstance(t, Template)
+
+
+def test_user():
+    statement = user("deploy", groups="sudo", home="/path/to/deploy/root").get_statement()
+    assert "adduser deploy" in statement
+    assert "--home" in statement
+    assert "adduser deploy sudo" in statement
+
+    statement = user("deploy", op="remove").get_statement()
+    assert "deluser deploy" in statement
+
+    with pytest.raises(NameError):
+        user("deploy", op="unsupported")

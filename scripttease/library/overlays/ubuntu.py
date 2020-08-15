@@ -1,5 +1,6 @@
 # Imports
 
+from superpython.utils import split_csv
 from ..commands import Command, Template
 from .common import COMMON_MAPPINGS
 from .django import DJANGO_MAPPINGS
@@ -32,6 +33,7 @@ __all__ = (
     "system_upgrade",
     "system_uninstall",
     "template",
+    "user",
     "Function",
 )
 
@@ -261,6 +263,48 @@ def template(source, target, backup=True, parser=None, **kwargs):
     return Template(source, target, backup=backup, parser=parser, **kwargs)
 
 
+def user(name, groups=None, home=None, op="add", password=None, **kwargs):
+    """Create or remove a user.
+
+    - name (str): The user name.
+    - groups (str | list): A list of groups to which the user should belong.
+    - home (str): The path to the user's home directory.
+    - op (str); The operation to perform; ``add`` or ``remove``.
+    - password (str): The user's password. (NOT IMPLEMENTED)
+
+    """
+    if op == "add":
+        kwargs.setdefault("comment", "create a user named %s" % name)
+
+        commands = list()
+
+        # The gecos switch eliminates the prompts.
+        a = list()
+        a.append('adduser %s --disabled-password --gecos ""' % name)
+        if home is not None:
+            a.append("--home %s" % home)
+
+        commands.append(Command(" ".join(a), **kwargs))
+
+        if type(groups) is str:
+            groups = split_csv(groups, smart=False)
+
+        if type(groups) in [list, tuple]:
+            for group in groups:
+                commands.append(Command("adduser %s %s" % (name, group), **kwargs))
+
+        a = list()
+        for c in commands:
+            a.append(c.get_statement(suppress_comment=True))
+
+        return Command("\n".join(a), **kwargs)
+    elif op == "remove":
+        kwargs.setdefault("comment", "create a user named %s" % name)
+        return Command("deluser %s" % name, **kwargs)
+    else:
+        raise NameError("Unsupported or unrecognized operation: %s" % op)
+
+
 MAPPINGS = {
     'apache': apache,
     'apache.disable_module': apache_disable_module,
@@ -279,10 +323,11 @@ MAPPINGS = {
     'start': service_start,
     'stop': service_stop,
     'system': system,
+    'template': template,
     'update': system_update,
     'uninstall': system_uninstall,
     'upgrade': system_upgrade,
-    'template': template,
+    'user': user,
 }
 
 MAPPINGS.update(COMMON_MAPPINGS)
