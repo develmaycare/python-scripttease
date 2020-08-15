@@ -149,11 +149,6 @@ def test_rsync():
     assert "/path/to/remote" in s
 
 
-def test_run():
-    c = run("ls -ls")
-    assert "ls -ls" in c.get_statement()
-
-
 def test_scopy():
     with pytest.raises(ValueError):
         c = scopy("/path/to/local/file.txt", "/path/to/remote/file.txt")
