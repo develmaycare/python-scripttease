@@ -11,6 +11,7 @@ sys.path.append("../")
 
 # Import overlays
 from scripttease.library.overlays.common import COMMON_MAPPINGS
+from scripttease.library.overlays.centos import MAPPINGS as CENTOS_MAPPINGS
 from scripttease.library.overlays.django import DJANGO_MAPPINGS
 from scripttease.library.overlays.pgsql import PGSQL_MAPPINGS
 from scripttease.library.overlays.posix import POSIX_MAPPINGS
@@ -109,6 +110,15 @@ print_mapping(PGSQL_MAPPINGS)
 print_heading("POSIX")
 print_description("Posix commands form the basis of overlays for nix platforms.")
 print_mapping(POSIX_MAPPINGS)
+
+exclude_from_centos = COMMON_MAPPINGS.copy()
+exclude_from_centos.update(DJANGO_MAPPINGS)
+exclude_from_centos.update(PGSQL_MAPPINGS)
+exclude_from_centos.update(POSIX_MAPPINGS)
+print_heading("Cent OS")
+print_description("The Cent OS overlay incorporates commands specific to that platform as well as commands from "
+                  "common, Django, Postgres, and POSIX.")
+print_mapping(CENTOS_MAPPINGS, excludes=exclude_from_centos)
 
 exclude_from_ubuntu = COMMON_MAPPINGS.copy()
 exclude_from_ubuntu.update(DJANGO_MAPPINGS)
