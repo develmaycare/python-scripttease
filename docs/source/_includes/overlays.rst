@@ -839,6 +839,154 @@ Write to a file.
     write: path
     content: None
 
+Cent OS
+=======
+
+The Cent OS overlay incorporates commands specific to that platform as well as commands from common, Django, Postgres, and POSIX.
+
+apache
+------
+
+Execute an Apache-related command.
+
+- op (str): The operation to perform; reload, restart, start, stop, test.
+
+
+.. code-block:: ini
+
+    [run apache command]
+    apache: op
+
+install
+-------
+
+Install a system-level package.
+
+- name (str): The name of the package to install.
+
+
+.. code-block:: ini
+
+    [run install command]
+    install: name
+
+reload
+------
+
+Reload a service.
+
+- name (str): The service name.
+
+
+.. code-block:: ini
+
+    [run reload command]
+    reload: name
+
+restart
+-------
+
+Restart a service.
+
+- name (str): The service name.
+
+
+.. code-block:: ini
+
+    [run restart command]
+    restart: name
+
+start
+-----
+
+Start a service.
+
+- name (str): The service name.
+
+
+.. code-block:: ini
+
+    [run start command]
+    start: name
+
+stop
+----
+
+Stop a service.
+
+- name (str): The service name.
+
+
+.. code-block:: ini
+
+    [run stop command]
+    stop: name
+
+system
+------
+
+Perform a system operation.
+
+- op (str): The operation to perform; reboot, update, upgrade.
+
+
+.. code-block:: ini
+
+    [run system command]
+    system: op
+
+template
+--------
+
+Create a file from a template.
+
+- source (str): The path to the template file.
+- target (str): The path to where the new file should be created.
+- backup (bool): Indicates whether a backup should be made if the target file already exists.
+- parser (str): The parser to use ``jinja`` (the default) or ``simple``.
+
+
+.. code-block:: ini
+
+    [run template command]
+    template: source target
+    backup: True
+    parser: None
+
+uninstall
+---------
+
+Uninstall a system-level package.
+
+- name (str): The name of the package to uninstall.
+
+
+.. code-block:: ini
+
+    [run uninstall command]
+    uninstall: name
+
+user
+----
+
+Create or remove a user.
+
+- name (str): The user name.
+- groups (str | list): A list of groups to which the user should belong.
+- home (str): The path to the user's home directory.
+- op (str); The operation to perform; ``add`` or ``remove``.
+- password (str): The user's password. (NOT IMPLEMENTED)
+
+
+.. code-block:: ini
+
+    [run user command]
+    user: name
+    groups: None
+    home: None
+    op: add
+    password: None
+
 Ubuntu
 ======
 
@@ -1016,4 +1164,25 @@ Uninstall a system-level package.
 
     [run uninstall command]
     uninstall: name
+
+user
+----
+
+Create or remove a user.
+
+- name (str): The user name.
+- groups (str | list): A list of groups to which the user should belong.
+- home (str): The path to the user's home directory.
+- op (str); The operation to perform; ``add`` or ``remove``.
+- password (str): The user's password. (NOT IMPLEMENTED)
+
+
+.. code-block:: ini
+
+    [run user command]
+    user: name
+    groups: None
+    home: None
+    op: add
+    password: None
 

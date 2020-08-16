@@ -26,7 +26,7 @@ Overlays
 An *overlay* is a set of command meta functions that define the capabilities of a specific operating system.
 
 .. note::
-    At present, the only fully defined overlay is for Ubuntu.
+    At present, the only fully defined overlays are for Cent OS and Ubuntu.
 
 See :ref:`topics-overlays`.
 
