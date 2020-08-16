@@ -52,6 +52,7 @@ class Template(Command):
             'environments': kwargs.pop("environments", None),
             'function': kwargs.pop("function", None),
             # 'local': kwargs.pop("local", False),
+            'name': "template",
             'prefix': kwargs.pop("prefix", None),
             'shell': kwargs.pop("shell", "/bin/bash"),
             'stop': kwargs.pop("stop", False),

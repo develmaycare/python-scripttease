@@ -4,9 +4,11 @@
 class Command(object):
     """A command line statement."""
 
-    def __init__(self, statement, comment=None, condition=None, cd=None, environments=None, function=None, prefix=None,
-                 register=None, shell=None, stop=False, sudo=None, tags=None, **kwargs):
+    def __init__(self, statement, comment=None, condition=None, cd=None, environments=None, function=None, name=None,
+                 prefix=None, register=None, shell=None, stop=False, sudo=None, tags=None, **kwargs):
         """Initialize a command.
+
+        :param name: The name of the command.
 
         :param statement: The statement to be executed.
         :type statement: str
@@ -25,6 +27,10 @@ class Command(object):
 
         :param function: The name of the function in which the statement is executed.
         :type function: str
+
+        :param name: The name of the command from the mapping. Not used and not required for programmatic use, but
+                     automatically assigned during factory instantiation.
+        :type name: str
 
         :param prefix: A statement to execute before the main statement is executed.
         :type prefix: str
@@ -53,6 +59,7 @@ class Command(object):
         self.cd = cd
         self.environments = environments or list()
         self.function = function
+        self.name = name
         self.prefix = prefix
         self.register = register
         self.shell = shell
@@ -143,13 +150,17 @@ class Command(object):
 class ItemizedCommand(object):
     """An itemized command represents multiple commands of with the same statement but different parameters."""
 
-    def __init__(self, callback, items, *args, **kwargs):
+    def __init__(self, callback, items, *args, name=None, **kwargs):
         """Initialize the command.
 
         :param callback: The function to be used to generate the command.
 
         :param items: The command arguments.
         :type items: list[str]
+
+        :param name: The name of the command from the mapping. Not used and not required for programmatic use, but
+                     automatically assigned during factory instantiation.
+        :type name: str
 
         :param args: The itemized arguments. ``$item`` should be included.
 
@@ -160,6 +171,7 @@ class ItemizedCommand(object):
         self.callback = callback
         self.items = items
         self.kwargs = kwargs
+        self.name = name
 
     def __getattr__(self, item):
         return self.kwargs.get(item)

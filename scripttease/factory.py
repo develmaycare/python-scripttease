@@ -53,9 +53,11 @@ class Factory(object):
         try:
             items = kwargs.pop("items", None)
             if items is not None:
-                return ItemizedCommand(callback, items, *args, **kwargs)
+                return ItemizedCommand(callback, items, *args, name=name, **kwargs)
 
-            return callback(*args, **kwargs)
+            command = callback(*args, **kwargs)
+            command.name = name
+            return command
         except (KeyError, NameError, TypeError, ValueError) as e:
             log.critical("Failed to load %s command: %s" % (name, e))
             return None

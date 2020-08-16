@@ -43,6 +43,11 @@ def test_apache_enable_site():
     assert "a2ensite example.com" in c.get_statement()
 
 
+def test_command_exists():
+    assert command_exists("apache") is True
+    assert command_exists("nonexistent") is False
+
+
 def test_service_reload():
     c = service_reload("postfix")
     assert "service postfix reload" in c.get_statement()
