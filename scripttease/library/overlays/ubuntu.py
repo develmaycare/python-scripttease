@@ -299,7 +299,7 @@ def user(name, groups=None, home=None, op="add", password=None, **kwargs):
 
         return Command("\n".join(a), **kwargs)
     elif op == "remove":
-        kwargs.setdefault("comment", "create a user named %s" % name)
+        kwargs.setdefault("comment", "remove a user named %s" % name)
         return Command("deluser %s" % name, **kwargs)
     else:
         raise NameError("Unsupported or unrecognized operation: %s" % op)
