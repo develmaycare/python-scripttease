@@ -138,6 +138,28 @@ class Command(object):
 
         return "\n".join(b)
 
+    def has_attribute(self, name):
+        """Indicates whether the command has the named, dynamic attribute.
+
+        :param name: The name of the attribute to be checked.
+        :type name: str
+
+        :rtype: bool
+
+        """
+        return name in self._attributes
+
+    def set_attribute(self, name, value):
+        """Set the value of a dynamic attribute.
+
+        :param name: The name of the attribute.
+        :type name: str
+
+        :param value: The value of the attribute.
+
+        """
+        self._attributes[name] = value
+
     def _get_statement(self):
         """By default, get the statement passed upon command initialization.
 
@@ -221,6 +243,31 @@ class ItemizedCommand(object):
         #     a.append("")
 
         return "\n".join(a)
+
+    def has_attribute(self, name):
+        """Indicates whether the command has the named, dynamic attribute.
+
+        :param name: The name of the attribute to be checked.
+        :type name: str
+
+        :rtype: bool
+
+        """
+        return name in self.kwargs
+
+    def set_attribute(self, name, value):
+        """Set the value of a dynamic attribute.
+
+        :param name: The name of the attribute.
+        :type name: str
+
+        :param value: The value of the attribute.
+
+        .. note::
+            This is applied to all command in the itemized list.
+
+        """
+        self.kwargs[name] = value
 
 
 class Sudo(object):

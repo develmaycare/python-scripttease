@@ -35,6 +35,10 @@ class TestCommand(object):
         statement = c.get_statement()
         assert "if [[ $?" in statement
 
+    def test_has_attribute(self):
+        c = Command("ls -ls")
+        assert c.has_attribute("testing") is False
+
     def test_init(self):
         c = Command("ls -ls", sudo=Sudo(user="deploy"))
         assert isinstance(c.sudo, Sudo)
@@ -60,6 +64,12 @@ class TestCommand(object):
         c = Command("ls -ls")
         assert repr(c) == "<Command>"
 
+    def test_set_attribute(self):
+        c = Command("ls -ls")
+        assert c.testing is None
+        c.set_attribute("testing", True)
+        assert c.testing is True
+
 
 class TestItemizedCommand(object):
 
@@ -80,6 +90,16 @@ class TestItemizedCommand(object):
         assert "psycopg2-binary" in statement
         assert "django" in statement
 
+    def test_has_attribute(self):
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
+        assert c.has_attribute("testing") is False
+
     def test_repr(self):
         c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
         assert repr(c) == "<ItemizedCommand python_pip>"
+
+    def test_set_attribute(self):
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
+        assert c.testing is None
+        c.set_attribute("testing", True)
+        assert c.testing is True
