@@ -1,8 +1,9 @@
 # Imports
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from superpython.logging import LoggingHelper
+from commonkit.logging import LoggingHelper
 from ..constants import LOGGER_NAME
+from ..version import VERSION
 from . import initialize
 from . import subcommands
 
@@ -24,7 +25,7 @@ def main_command():
 This command is used to parse configuration files and output the commands.
 
     """
-    __version__ = "6.2.0-d"
+    __version__ = VERSION
 
     # Main argument parser from which sub-commands are created.
     parser = ArgumentParser(description=__doc__, epilog=__help__, formatter_class=RawDescriptionHelpFormatter)
@@ -162,7 +163,7 @@ This command is used to parse configuration files and output the commands.
 
     # Load additional context from file.
     if args.variables_file:
-        variables = initialize.variable_from_file(args.variables_file)
+        variables = initialize.variables_from_file(args.variables_file)
         if variables:
             context.update(variables)
 
