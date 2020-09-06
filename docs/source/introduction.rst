@@ -7,7 +7,7 @@ Introduction
 Overview
 ========
 
-Script Tease is a library and command line tool for generating commands programmatically or using configuration files.
+Script Tease is a library and command line tool for generating commands programmatically or (especially) using configuration files.
 
 Concepts
 ========
@@ -26,15 +26,18 @@ Overlays
 An *overlay* is a set of command meta functions that define the capabilities of a specific operating system.
 
 .. note::
-    At present, the only fully defined overlays are for Cent OS and Ubuntu.
+    At present, the only fully defined operating system overlays are for Cent OS and Ubuntu.
 
 See :ref:`topics-overlays`.
 
 Terms and Definitions
 =====================
 
-term
-    Definition.
+command
+    When used in Script Tease documentation, this is a command instance which contains the properties and parameters for a command line statement.
+
+statement
+    A specific statement (string) to be executed. A *statement* is contained within a *command*.
 
 License
 =======

@@ -37,11 +37,7 @@ TODO
 FAQs
 ====
 
-**Question?**
-
-Answer.
-
 Have a question? `Just ask`_!
 
-.. _Just ask: https://{{ project_domain }}/contact
+.. _Just ask: https://develmaycare.com/contact/?product=Script%20Tease
 

@@ -1,17 +1,37 @@
 Requirements
 ------------
 
-superpython
------------
+jinja2
+------
 
-
-**URLs**
-
-- `Source Code <https://github.com/develmaycare/superpython>`_
 
 **Install**
 
 .. code-block:: bash
 
-    pip install git+https://github.com/develmaycare/superpython;
+    pip install jinja2;
+
+pygments
+--------
+
+
+**Install**
+
+.. code-block:: bash
+
+    pip install pygments;
+
+python-commonkit
+----------------
+
+
+**URLs**
+
+- `Source Code <https://github.com/develmaycare/python-commonkit>`_
+
+**Install**
+
+.. code-block:: bash
+
+    pip install python-commonkit;
 

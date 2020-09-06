@@ -30,7 +30,7 @@ For overlays that represent an operating system, the ``command_exists()`` functi
 2) Define Command Function
 --------------------------
 
-The purpose of each function is to provide an interface for instantiating a :py:class`scripttease.library.commands.base.Command` instance. The example below is taken from the ``posix`` module.
+The purpose of each function is to provide an interface for instantiating a :py:class:`scripttease.library.commands.base.Command` instance. The example below is taken from the ``posix`` module.
 
 .. code-block:: python
 
@@ -61,6 +61,9 @@ The purpose of each function is to provide an interface for instantiating a :py:
 The arguments and any specific keyword arguments are automatically used by the parser, but also serve as a simple interface for programmatic use.
 
 Each function *must* also accept ``**kwargs`` and should set a default for ``comment`` as above.
+
+.. important::
+    Rather than the usual Spinx-based documentation, define the docstring as shown above. This is used to automatically create the documentation for the command.
 
 3) Add Functions to the Mapping
 -------------------------------
@@ -96,8 +99,15 @@ Additionally, for an operating system overlay, you may wish to import other mapp
     MAPPINGS.update(DJANGO_MAPPINGS)
     MAPPINGS.update(PGSQL_MAPPINGS)
 
+4) Update Documentation
+-----------------------
+
+Add the command mappings to the ``docs/generate_command_signatures.py`` file. See the script for more details.
+
 Export Commands as a Script
 ===========================
+
+You can export commands as a read-to-use script. For example:
 
 .. code-block:: python
 
@@ -108,3 +118,61 @@ Export Commands as a Script
 
     script = config.as_script()
     print(script)
+
+Post a Message to Slack
+=======================
+
+The slack function may be used to send a message to a Slack channel. This uses the Incoming Webhooks feature, which requires some additional setup.
+
+.. note::
+    The following steps were accurate as of September 2020.
+
+**1.** Log in to Slack and go to `Your Apps`_.
+
+.. _Your Apps: https://api.slack.com/apps
+
+**2.** Create a new Slack app.
+
+**3.** On the next page, select Incoming Webhooks and then toggle activation.
+
+.. image:: /_static/images/slack-1.jpg
+
+**4.** Next click Add new Webhook to Workspace and select the channel to which the message will be posted.
+
+.. image:: /_static/images/slack-2.jpg
+
+.. image:: /_static/images/slack-3.jpg
+
+**5.** Copy the URL for the new webhook to use as the ``url`` parameter for the Slack command.
+
+.. code-block:: ini
+
+    [send a message to slack]
+    slack: "This is a test message."
+    url: the URL you created goes here
+
+Post a Message to Twist
+=======================
+
+The twist function may be used to send a message to Twist, which requires some additional setup.
+
+.. note::
+    The following steps were accurate as of September 2020.
+
+**1.** Log in to Twist and from the profile menu go to Add Integrations. Then click on Build and "Add a new integration".
+
+**2.** Provide the requested info.
+
+.. image:: _static/images/twist-1.png
+
+**3.** After submitting this info, go to Installation. Select a channel and who to notify. Then click "Install integration".
+
+.. image:: _static/images/twist-2.png
+
+**4.** Copy the "Post content manually" URL for use in your configuration file.
+
+.. code-block:: ini
+
+    [post a message to twist]
+    twist: "This is a test message."
+    url: the URL you created goes here

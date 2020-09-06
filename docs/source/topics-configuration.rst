@@ -32,8 +32,8 @@ An example file:
 Notes regarding this format:
 
 - This is the standard format for Python's ConfigParser. If you prefer, you may use ``=`` instead of ``:``.
-- The first line is the INI section and is used as the default comment.
-- The command name must be the *first* option in the section.
+- The first part of each command is the INI section and is used as the default comment.
+- The command name *must* be the *first* option in the section.
 - The arguments for the command appear as the value of the first option in the section. Arguments are separated by a
   space.
 - Arguments that should be treated as a single value should be enclosed in double quotes.
@@ -50,16 +50,12 @@ All commands support the following common parameters:
 - ``comment``: A comment regarding the command.
 - ``condition``: A condition for execution. For example, ``! -f /path/to/some/file.txt``
 - ``cd``: The path from which a command should be executed.
-- ``environments``: A string or list of strings indicating the operational environments in which the command runs. This
-  is *not* used by default, but may be used to programmatically filter commands for a specific environment. For example,
-  development versus live.
+- ``environments``: A string or list of comma-separated strings indicating the operational environments in which the command runs. This is *not* used by default, but may be used to programmatically filter commands for a specific environment. For example, development versus live.
 - ``prefix``: A statement to be added prior to executing the command.
 - ``register``: A variable name to which the the success or failure (exit code) of the statement is captured.
-- ``shell``: The shell used to run the commands. For example, ``/bin/bash``. This is generally not important, but can
-  be a problem when attempting to execute some commands (such as Django management commands).
+- ``shell``: The shell used to run the commands. For example, ``/bin/bash``. This is generally not important, but can be a problem when attempting to execute some commands (such as Django management commands).
 - ``stop``: ``True`` indicates no other commands should be executed if the given command fails.
-- ``sudo``: ``True`` indicates the command should be automatically prefixed with ``sudo``. If provided as a string, the
-  command is also prefixed with a specific user name.
+- ``sudo``: ``True`` indicates the command should be automatically prefixed with ``sudo``. If provided as a string, the command is also prefixed with a specific user name.
 - ``tags``: A list of tags used to classify the command.
 
 Defining an "Itemized" Command
@@ -112,23 +108,3 @@ Then with a config instance:
     for command in config.get_commands():
         print(command.get_statement(cd=True))
         print("")
-
-Using the Tease Command
-=======================
-
-The ``tease`` command may be used to parse a configuration file, providing additional utilities for working with commands. See :ref:`commands`.
-
-The ``path`` argument defaults to ``commands.ini``.
-
-Loading Variables from a File
------------------------------
-
-Context variables may be loaded from a file:
-
-.. code-block:: ini
-
-    [domain]
-    name = example.com
-    tld = example_com
-
-The variables above are available as ``section_key``. For example, ``domain_name`` is ``example.com``.

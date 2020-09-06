@@ -1,10 +1,10 @@
 .. _topics-overlays:
 
-*******
-Overlay
-*******
+********
+Overlays
+********
 
-An overlay is a collection of functions that provide an interface to command creation.
+An overlay is a collection of functions that provide an interface to command creation. An overlay allows configuration files to specify commands in a generic way. When the file is loaded, an overlay may be specified which Script Tease uses to generate commands that are specific to a given operating system.
 
 There are currently four (4) general and re-usable overlays:
 

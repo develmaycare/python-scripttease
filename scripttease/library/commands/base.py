@@ -8,8 +8,6 @@ class Command(object):
                  prefix=None, register=None, shell=None, stop=False, sudo=None, tags=None, **kwargs):
         """Initialize a command.
 
-        :param name: The name of the command.
-
         :param statement: The statement to be executed.
         :type statement: str
 
@@ -186,7 +184,7 @@ class ItemizedCommand(object):
 
         :param args: The itemized arguments. ``$item`` should be included.
 
-        :param kwargs: Keyword arguments are passed to the command class upon instantiation.
+        Keyword arguments are passed to the command class upon instantiation.
 
         """
         self.args = args
