@@ -9,6 +9,7 @@ __all__ = (
     "python_pip",
     "python_virtualenv",
     "run",
+    "slack",
 )
 
 # Functions
@@ -62,10 +63,29 @@ def run(statement, **kwargs):
     return Command(statement, **kwargs)
 
 
+def slack(message, url=None, **kwargs):
+    """Send a message to Slack.
+
+    - message (str): The message to be sent.
+    - url (str): The webhook URL. This is required. See documentation.
+
+    """
+    kwargs.setdefault("comment", "send a message to slack")
+
+    a = list()
+
+    a.append("curl -X POST -H 'Content-type: application/json' --data")
+    a.append("'" + '{"text": "%s"}' % message + "'")
+    a.append(url)
+
+    return Command(" ".join(a), **kwargs)
+
+
 # Mappings
 
 COMMON_MAPPINGS = {
     'pip': python_pip,
     'run': run,
+    'slack': slack,
     'virtualenv': python_virtualenv,
 }
