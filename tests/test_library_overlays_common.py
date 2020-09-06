@@ -3,7 +3,7 @@ from scripttease.library.overlays.common import *
 
 def test_python_pip():
     c = python_pip("Pillow")
-    assert "pip install Pillow" in c.get_statement()
+    assert "pip3 install Pillow" in c.get_statement()
 
     c = python_pip("Pillow", upgrade=True)
     assert "--upgrade" in c.get_statement()

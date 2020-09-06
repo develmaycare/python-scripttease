@@ -14,19 +14,24 @@ __all__ = (
 # Functions
 
 
-def python_pip(name, op="install", upgrade=False, venv=None, **kwargs):
+def python_pip(name, op="install", upgrade=False, venv=None, version=3, **kwargs):
     """Use pip to install or uninstall a Python package.
 
     - name (str): The name of the package.
     - op (str): The operation to perform; install, uninstall
     - upgrade (bool): Upgrade an installed package.
     - venv (str): The name of the virtual environment to load.
+    - version (int): The Python version to use, e.g. ``2`` or ``3``.
 
     """
+    manager = "pip"
+    if version == 3:
+        manager = "pip3"
+
     if upgrade:
-        statement = "pip install --upgrade %s" % name
+        statement = "%s install --upgrade %s" % (manager, name)
     else:
-        statement = "pip %s %s" % (op, name)
+        statement = "%s %s %s" % (manager, op, name)
 
     if venv is not None:
         kwargs['prefix'] = "source %s/bin/activate" % venv
