@@ -1,7 +1,7 @@
 # Imports
 
+from commonkit import indent
 import os
-from superpython.utils import indent
 from ..commands import Command
 
 # Exports
@@ -350,7 +350,7 @@ def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, 
     # $(OUTPUTH_PATH) $(SSH_USER)@$(SSH_HOST):$(UPLOAD_PATH) --cvs-exclude;
 
     tokens = list()
-    tokens.append('rsync')
+    tokens.append("rsync")
     tokens.append("--cvs-exclude")
     tokens.append("--checksum")
     tokens.append("--compress")
@@ -492,11 +492,28 @@ class Function(object):
     """A function that may be used to organize related commands to be called together."""
 
     def __init__(self, name, commands=None, comment=None):
+        """Initialize a function.
+
+        :param name: The name of the function.
+        :type name: str
+
+        :param commands: The command instances to be included in the function's output.
+        :type commands: list
+
+        :param comment: A comment regarding the function.
+        :type comment: str
+
+        """
         self.commands = commands or list()
         self.comment = comment
         self.name = name
 
     def to_string(self):
+        """Export the function as a string.
+
+        :rtype: str
+
+        """
         a = list()
 
         if self.comment is not None:

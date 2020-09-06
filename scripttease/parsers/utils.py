@@ -1,7 +1,7 @@
 # Imports
 
+from commonkit import any_list_item
 import logging
-from superpython.utils import any_list_item
 from ..constants import LOGGER_NAME
 from .ini import Config
 

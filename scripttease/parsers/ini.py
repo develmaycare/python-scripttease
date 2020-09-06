@@ -1,8 +1,8 @@
 # Imports
 
+from commonkit import parse_jinja_template, read_file, smart_cast, split_csv
 from configparser import ConfigParser, ParsingError
 import logging
-from superpython.utils import parse_jinja_template, read_file, smart_cast, split_csv
 import os
 from ..constants import LOGGER_NAME
 from ..library.commands import ItemizedCommand

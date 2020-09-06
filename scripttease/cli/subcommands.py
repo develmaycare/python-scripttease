@@ -1,7 +1,7 @@
 # Imports
 
-from superpython.shell import EXIT
-from superpython.utils import highlight_code
+from commonkit import highlight_code
+from commonkit.shell import EXIT
 from ..parsers import load_commands, load_config
 
 # Exports

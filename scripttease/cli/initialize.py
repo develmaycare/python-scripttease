@@ -1,9 +1,9 @@
 # Imports
 
+from commonkit import smart_cast
 from configparser import ConfigParser
 import logging
 import os
-from superpython.utils import smart_cast
 from ..constants import LOGGER_NAME
 
 log = logging.getLogger(LOGGER_NAME)
@@ -14,7 +14,7 @@ __all__ = (
     "context_from_cli",
     "filters_from_cli",
     "options_from_cli",
-    "variable_from_file",
+    "variables_from_file",
 )
 
 # Functions
@@ -78,7 +78,7 @@ def options_from_cli(options):
     return _options
 
 
-def variable_from_file(path):
+def variables_from_file(path):
     """Loads variables from a given INI file.
 
     :param path: The path to the INI file.

@@ -20,15 +20,16 @@ setup(
     author='Shawn Davis',
     author_email='shawn@develmaycare.com',
     url='https://github.com/develmaycare/python-scripttease',
-    packages=find_packages(exclude=["tests"]),
+    packages=find_packages(exclude=["tests", "tests.*"]),
     include_package_data=True,
-    # superpython provides jinja2 and pygments
     install_requires=[
-        "superpython",
+        "jinja2",
+        "pygments",
+        "python-commonkit",
     ],
-    dependency_links=[
-        "https://github.com/develmaycare/superpython",
-    ],
+    # dependency_links=[
+    #     "https://github.com/develmaycare/superpython",
+    # ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',

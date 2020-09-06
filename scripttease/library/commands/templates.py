@@ -1,9 +1,9 @@
 # Imports
 
+from commonkit import parse_jinja_template, read_file
 from jinja2.exceptions import TemplateError, TemplateNotFound
 import logging
 import os
-from superpython.utils import parse_jinja_template, read_file
 from ...constants import LOGGER_NAME
 from .base import Command
 

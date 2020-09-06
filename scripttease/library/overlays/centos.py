@@ -1,6 +1,6 @@
 # Imports
 
-from superpython.utils import split_csv
+from commonkit import split_csv
 from ..commands import Command, Template
 from .common import COMMON_MAPPINGS
 from .django import DJANGO_MAPPINGS
