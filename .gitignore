@@ -1,5 +1,6 @@
 *.b
 *.bak
+*.egg-info
 *.pyc
 *.swp
 .coverage
@@ -8,6 +9,8 @@
 .pytest_cache
 __pycache__
 _scraps
+build
+dist
 docs/build
 htmlcov
 tmp.*
