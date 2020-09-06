@@ -10,6 +10,8 @@ __all__ = (
     "POSIX_MAPPINGS",
     "archive",
     "certbot",
+    "dialog",
+    "echo",
     "extract",
     "file_append",
     "file_copy",
@@ -89,6 +91,35 @@ def certbot(domain_name, email=None, webroot=None, **kwargs):
     }
 
     return Command(name, **kwargs)
+
+
+def dialog(message, height=15, title="Message", width=100, **kwargs):
+    """Display a dialog message.
+
+    - message (str): The message to be displayed.
+    - height (int): The height of the dialog.
+    - title (str): The title of the dialog.
+    - width (int): The width of the dialog.
+
+    """
+    kwargs.setdefault("comment", "display a dialog message")
+
+    a = list()
+    a.append('dialog --clear --backtitle "%s"' % title)
+    a.append('--msgbox "%s" %s %s; clear;' % (message, height, width))
+
+    return Command(" ".join(a), **kwargs)
+
+
+def echo(message, **kwargs):
+    """Echo a message.
+
+    - message (str): The message to be printed to screen.
+
+    """
+    kwargs.setdefault("comment", "print message to screen")
+
+    return Command('echo "%s"' % message, **kwargs)
 
 
 def extract(from_path, absolute=False, exclude=None, strip=None, to_path=None, view=False, **kwargs):
@@ -537,6 +568,8 @@ POSIX_MAPPINGS = {
     'archive': archive,
     'certbot': certbot,
     'copy': file_copy,
+    'dialog': dialog,
+    'echo': echo,
     'extract': extract,
     'func': Function,
     # 'function': Function,

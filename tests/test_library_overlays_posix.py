@@ -27,6 +27,21 @@ def test_certbot():
     assert "--webroot -w /var/www/domains/example_com/www -d example.com" in s
 
 
+def test_dialog():
+    c = dialog("This is a test.", title="Testing")
+    s = c.get_statement(suppress_comment=True)
+    # dialog --clear --backtitle "Testing" --msgbox "This is a test." 15 100; clear;
+    assert 'dialog --clear --backtitle "Testing"' in s
+    assert '--msgbox "This is a test." 15 100; clear;'
+
+
+def test_echo():
+    c = echo("This is a test.")
+    s = c.get_statement(suppress_comment=True)
+    assert "echo" in s
+    assert "This is a test." in s
+
+
 def test_extract():
     c = extract(
         "/path/to/archive.tgz",
