@@ -43,7 +43,13 @@ class Factory(object):
 
         :rtype: scripttease.library.commands.Command | scripttease.library.commands.ItemizedCommand
 
+        :raise: RuntimeError
+        :raises: ``RuntimeError`` if the factory has not yet been loaded.
+
         """
+        if not self.is_loaded:
+            raise RuntimeError("Factory has not been loaded, so no commands are available. Call load() method first!")
+
         if not self.overlay.command_exists(name):
             log.warning("Command does not exist in %s overlay: %s" % (self._overlay, name))
             return None

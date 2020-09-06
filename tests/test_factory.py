@@ -1,3 +1,4 @@
+import pytest
 from scripttease.library.commands import Command, ItemizedCommand
 from scripttease.factory import Factory
 
@@ -5,6 +6,10 @@ from scripttease.factory import Factory
 class TestFactory(object):
 
     def test_get_command(self):
+        f = Factory("ubuntu")
+        with pytest.raises(RuntimeError):
+            f.get_command("testing")
+
         f = Factory("ubuntu")
         f.load()
 
