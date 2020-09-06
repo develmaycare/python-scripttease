@@ -2,6 +2,8 @@
 omit =
     docs/*
     scripttease/cli/*
+    scripttease/variables.py
+    scripttease/version.py
     sandbox
     setup.py
     tests/*
