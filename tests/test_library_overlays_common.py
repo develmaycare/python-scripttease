@@ -1,3 +1,4 @@
+import pytest
 from scripttease.library.overlays.common import *
 
 
@@ -23,8 +24,20 @@ def test_run():
 
 
 def test_slack():
+    with pytest.raises(ValueError):
+        slack("This is a test.")
+
     c = slack("This is a test.", url="https://example.slack.com/asdf/1234")
     s = c.get_statement(suppress_comment=True)
     assert "curl -X POST -H 'Content-type: application/json' --data" in s
     assert "This is a test." in s
     assert "https://example.slack.com/asdf/1234" in s
+
+
+def test_twist():
+    with pytest.raises(ValueError):
+        twist("This is a test.")
+
+    c = twist("This is a test.", url="https://example.twist.com/asdf/1234")
+    s = c.get_statement(suppress_comment=True)
+    print(s)

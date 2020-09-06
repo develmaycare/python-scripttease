@@ -10,6 +10,7 @@ __all__ = (
     "python_virtualenv",
     "run",
     "slack",
+    "twist",
 )
 
 # Functions
@@ -70,6 +71,9 @@ def slack(message, url=None, **kwargs):
     - url (str): The webhook URL. This is required. See documentation.
 
     """
+    if url is None:
+        raise ValueError("A url is required to use the slack command.")
+
     kwargs.setdefault("comment", "send a message to slack")
 
     a = list()
@@ -81,11 +85,37 @@ def slack(message, url=None, **kwargs):
     return Command(" ".join(a), **kwargs)
 
 
+def twist(message, title="Notice", url=None, **kwargs):
+    """Send a message to Twist.
+
+    - message (str): The message to be sent.
+    - title (str): The message title.
+    - url (str): The webhook URL. This is required. See documentation.
+
+    """
+    if url is None:
+        raise ValueError("A url is required to use the twist command.")
+
+    kwargs.setdefault("comment", "send a message to twist")
+
+    a = list()
+
+    # curl -X POST -H 'Content-type: application/json' --data '{"content": "This is the message.", "title": "Message Title"}' "https://twist.com/api/v3/integration_incoming/post_data?install_id=116240&install_token=116240_bfb05bde51ecd0f728b4b161bee6fcee"
+    a.append("curl -X POST -H 'Content-type: application/json' --data")
+
+    data = '{"content": "%s", "title": "%s"}' % (message, title)
+    a.append("'%s'" % data)
+    a.append('"%s"' % url)
+
+    return Command(" ".join(a), **kwargs)
+
+
 # Mappings
 
 COMMON_MAPPINGS = {
     'pip': python_pip,
     'run': run,
     'slack': slack,
+    'twist': twist,
     'virtualenv': python_virtualenv,
 }
