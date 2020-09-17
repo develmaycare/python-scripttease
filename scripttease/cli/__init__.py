@@ -3,7 +3,7 @@
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from commonkit.logging import LoggingHelper
 from ..constants import LOGGER_NAME
-from ..version import VERSION
+from ..version import DATE as VERSION_DATE, VERSION
 from . import initialize
 from . import subcommands
 
@@ -19,7 +19,7 @@ def main_command():
     """Process script configurations."""
 
     __author__ = "Shawn Davis <shawn@develmaycare.com>"
-    __date__ = "2020-07-23"
+    __date__ = VERSION_DATE
     __help__ = """NOTES
 
 This command is used to parse configuration files and output the commands.

@@ -196,6 +196,172 @@ Apply database migrations.
     django.migrate: 
     venv: None
 
+MySQL
+=====
+
+MySQL commands.
+
+mysql.create
+------------
+
+Create a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- owner (str): The owner (user/role name) of the new database.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.create command]
+    mysql.create: database
+    host: localhost
+    owner: None
+    password: None
+    port: 3306
+    user: root
+
+mysql.drop
+----------
+
+Drop (remove) a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.drop command]
+    mysql.drop: database
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.dump
+----------
+
+Dump (export) a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.dump command]
+    mysql.dump: database
+    file_name: None
+    host: localhost
+    inserts: False
+    password: None
+    port: 3306
+    user: root
+
+mysql.exists
+------------
+
+Determine if a MySQL database exists.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.exists command]
+    mysql.exists: database
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.grant
+-----------
+
+Grant privileges to a user.
+
+- to (str): The user name to which privileges are granted.
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- privileges (str): The privileges to be granted.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.grant command]
+    mysql.grant: to
+    database: None
+    host: localhost
+    password: None
+    port: 3306
+    privileges: ALL
+    user: root
+
+mysql.sql
+---------
+
+Execute a MySQL statement.
+
+- sql (str): The SQL to run.
+- database (str): The name of the database.
+- host (str): The host name.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.sql command]
+    mysql.sql: sql
+    database: default
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.user
+----------
+
+Work with a MySQL user.
+
+- name (str): The user name.
+- host (str): The host name.
+- op (str): The operation to perform: ``create``, ``drop``, ``exists``.
+- passwd (str): The password for a new user.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.user command]
+    mysql.user: name
+    host: localhost
+    op: create
+    passwd: None
+    password: None
+    port: 3306
+    user: root
+
 Postgres
 ========
 
@@ -910,7 +1076,7 @@ Write to a file.
 Cent OS
 =======
 
-The Cent OS overlay incorporates commands specific to that platform as well as commands from common, Django, Postgres, and POSIX.
+The Cent OS overlay incorporates commands specific to that platform as well as commands from common, Django, MySQL, Postgres, and POSIX.
 
 apache
 ------
@@ -937,6 +1103,167 @@ Install a system-level package.
 
     [run install command]
     install: name
+
+mysql.create
+------------
+
+Create a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- owner (str): The owner (user/role name) of the new database.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.create command]
+    mysql.create: database
+    host: localhost
+    owner: None
+    password: None
+    port: 3306
+    user: root
+
+mysql.drop
+----------
+
+Drop (remove) a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.drop command]
+    mysql.drop: database
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.dump
+----------
+
+Dump (export) a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.dump command]
+    mysql.dump: database
+    file_name: None
+    host: localhost
+    inserts: False
+    password: None
+    port: 3306
+    user: root
+
+mysql.exists
+------------
+
+Determine if a MySQL database exists.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.exists command]
+    mysql.exists: database
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.grant
+-----------
+
+Grant privileges to a user.
+
+- to (str): The user name to which privileges are granted.
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- privileges (str): The privileges to be granted.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.grant command]
+    mysql.grant: to
+    database: None
+    host: localhost
+    password: None
+    port: 3306
+    privileges: ALL
+    user: root
+
+mysql.sql
+---------
+
+Execute a MySQL statement.
+
+- sql (str): The SQL to run.
+- database (str): The name of the database.
+- host (str): The host name.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.sql command]
+    mysql.sql: sql
+    database: default
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.user
+----------
+
+Work with a MySQL user.
+
+- name (str): The user name.
+- host (str): The host name.
+- op (str): The operation to perform: ``create``, ``drop``, ``exists``.
+- passwd (str): The password for a new user.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.user command]
+    mysql.user: name
+    host: localhost
+    op: create
+    passwd: None
+    password: None
+    port: 3306
+    user: root
 
 reload
 ------
@@ -1058,7 +1385,7 @@ Create or remove a user.
 Ubuntu
 ======
 
-The Ubuntu overlay incorporates commands specific to that platform as well as commands from common, Django, Postgres, and POSIX.
+The Ubuntu overlay incorporates commands specific to that platform as well as commands from common, Django, MySQL, Postgres, and POSIX.
 
 apache
 ------
@@ -1136,6 +1463,167 @@ Install a system-level package.
 
     [run install command]
     install: name
+
+mysql.create
+------------
+
+Create a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- owner (str): The owner (user/role name) of the new database.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.create command]
+    mysql.create: database
+    host: localhost
+    owner: None
+    password: None
+    port: 3306
+    user: root
+
+mysql.drop
+----------
+
+Drop (remove) a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.drop command]
+    mysql.drop: database
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.dump
+----------
+
+Dump (export) a MySQL database.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.dump command]
+    mysql.dump: database
+    file_name: None
+    host: localhost
+    inserts: False
+    password: None
+    port: 3306
+    user: root
+
+mysql.exists
+------------
+
+Determine if a MySQL database exists.
+
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.exists command]
+    mysql.exists: database
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.grant
+-----------
+
+Grant privileges to a user.
+
+- to (str): The user name to which privileges are granted.
+- database (str): The database name.
+- host (str): The database host name or IP address.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number of the MySQL service running on the host.
+- privileges (str): The privileges to be granted.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.grant command]
+    mysql.grant: to
+    database: None
+    host: localhost
+    password: None
+    port: 3306
+    privileges: ALL
+    user: root
+
+mysql.sql
+---------
+
+Execute a MySQL statement.
+
+- sql (str): The SQL to run.
+- database (str): The name of the database.
+- host (str): The host name.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.sql command]
+    mysql.sql: sql
+    database: default
+    host: localhost
+    password: None
+    port: 3306
+    user: root
+
+mysql.user
+----------
+
+Work with a MySQL user.
+
+- name (str): The user name.
+- host (str): The host name.
+- op (str): The operation to perform: ``create``, ``drop``, ``exists``.
+- passwd (str): The password for a new user.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
+
+
+.. code-block:: ini
+
+    [run mysql.user command]
+    mysql.user: name
+    host: localhost
+    op: create
+    passwd: None
+    password: None
+    port: 3306
+    user: root
 
 reload
 ------

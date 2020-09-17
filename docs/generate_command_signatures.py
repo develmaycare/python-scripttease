@@ -13,6 +13,7 @@ sys.path.append("../")
 from scripttease.library.overlays.common import COMMON_MAPPINGS
 from scripttease.library.overlays.centos import MAPPINGS as CENTOS_MAPPINGS
 from scripttease.library.overlays.django import DJANGO_MAPPINGS
+from scripttease.library.overlays.mysql import MYSQL_MAPPINGS
 from scripttease.library.overlays.pgsql import PGSQL_MAPPINGS
 from scripttease.library.overlays.posix import POSIX_MAPPINGS
 from scripttease.library.overlays.ubuntu import MAPPINGS as UBUNTU_MAPPINGS
@@ -105,6 +106,10 @@ print_heading("Django")
 print_description("Django commands are available to all overlays.")
 print_mapping(DJANGO_MAPPINGS)
 
+print_heading("MySQL")
+print_description("MySQL commands.")
+print_mapping(MYSQL_MAPPINGS)
+
 print_heading("Postgres")
 print_description("Postgres commands.")
 print_mapping(PGSQL_MAPPINGS)
@@ -119,7 +124,7 @@ exclude_from_centos.update(PGSQL_MAPPINGS)
 exclude_from_centos.update(POSIX_MAPPINGS)
 print_heading("Cent OS")
 print_description("The Cent OS overlay incorporates commands specific to that platform as well as commands from "
-                  "common, Django, Postgres, and POSIX.")
+                  "common, Django, MySQL, Postgres, and POSIX.")
 print_mapping(CENTOS_MAPPINGS, excludes=exclude_from_centos)
 
 exclude_from_ubuntu = COMMON_MAPPINGS.copy()
@@ -128,5 +133,5 @@ exclude_from_ubuntu.update(PGSQL_MAPPINGS)
 exclude_from_ubuntu.update(POSIX_MAPPINGS)
 print_heading("Ubuntu")
 print_description("The Ubuntu overlay incorporates commands specific to that platform as well as commands from "
-                  "common, Django, Postgres, and POSIX.")
+                  "common, Django, MySQL, Postgres, and POSIX.")
 print_mapping(UBUNTU_MAPPINGS, excludes=exclude_from_ubuntu)

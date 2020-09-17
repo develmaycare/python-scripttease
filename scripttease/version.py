@@ -1,4 +1,5 @@
-VERSION = "6.4.3-d"
-major = 6
-minor = 4
-patch = 3
+DATE = "2020-09-17"
+VERSION = "6.4.4-d"
+MAJOR = 6
+MINOR = 4
+PATCH = 4

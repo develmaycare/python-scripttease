@@ -4,6 +4,7 @@ from commonkit import split_csv
 from ..commands import Command, Template
 from .common import COMMON_MAPPINGS
 from .django import DJANGO_MAPPINGS
+from .mysql import MYSQL_MAPPINGS
 from .pgsql import PGSQL_MAPPINGS
 from .posix import POSIX_MAPPINGS, Function
 
@@ -332,5 +333,6 @@ MAPPINGS = {
 
 MAPPINGS.update(COMMON_MAPPINGS)
 MAPPINGS.update(DJANGO_MAPPINGS)
+MAPPINGS.update(MYSQL_MAPPINGS)
 MAPPINGS.update(PGSQL_MAPPINGS)
 MAPPINGS.update(POSIX_MAPPINGS)
