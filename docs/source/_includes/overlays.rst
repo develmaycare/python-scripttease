@@ -367,7 +367,98 @@ Postgres
 
 Postgres commands.
 
-pg.client
+pgsql.create
+------------
+
+Create a PostgreSQL database.
+
+- database (str): The database name.
+- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+- admin_user (str): The name of the user with sufficient access privileges to execute the command.
+- host (str): The database host name or IP address.
+- owner (str): The owner (user/role name) of the new database.
+- port (int): The port number of the Postgres service running on the host.
+- template (str): The database template name to use, if any.
+
+
+.. code-block:: ini
+
+    [run pgsql.create command]
+    pgsql.create: database
+    admin_pass: None
+    admin_user: postgres
+    host: localhost
+    owner: None
+    port: 5432
+    template: None
+
+pgsql.drop
+----------
+
+Remove a PostgreSQL database.
+
+- database (str): The database name.
+- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+- admin_user (str): The name of the user with sufficient access privileges to execute the command.
+- host (str): The database host name or IP address.
+- port (int): The port number of the Postgres service running on the host.
+
+
+.. code-block:: ini
+
+    [run pgsql.drop command]
+    pgsql.drop: database
+    admin_pass: None
+    admin_user: postgres
+    host: localhost
+    port: 5432
+
+pgsql.dump
+----------
+
+Export a Postgres database.
+
+- database (str): The database name.
+- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+- admin_user (str): The name of the user with sufficient access privileges to execute the command.
+- file_name (str): The name/path of the export file. Defaults the database name plus ``.sql``.
+- host (str): The database host name or IP address.
+- port (int): The port number of the Postgres service running on the host.
+
+
+.. code-block:: ini
+
+    [run pgsql.dump command]
+    pgsql.dump: database
+    admin_pass: None
+    admin_user: postgres
+    file_name: None
+    host: localhost
+    port: 5432
+
+pgsql.exists
+------------
+
+Determine if a Postgres database exists.
+
+- database (str): The database name.
+- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+- admin_user (str): The name of the user with sufficient access privileges to execute the command.
+- host (str): The database host name or IP address.
+- owner (str): The owner (user/role name) of the new database.
+- port (int): The port number of the Postgres service running on the host.
+
+
+.. code-block:: ini
+
+    [run pgsql.exists command]
+    pgsql.exists: database
+    admin_pass: None
+    admin_user: postgres
+    host: localhost
+    port: 5432
+
+pgsql.sql
 ---------
 
 Execute a psql command.
@@ -382,333 +473,38 @@ Execute a psql command.
 
 .. code-block:: ini
 
-    [run pg.client command]
-    pg.client: sql
+    [run pgsql.sql command]
+    pgsql.sql: sql
     database: template1
     host: localhost
     password: None
     port: 5432
     user: postgres
 
-pg.createdatabase
------------------
+pgsql.user
+----------
 
-Create a PostgreSQL database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- owner (str): The owner (user/role name) of the new database.
-- port (int): The port number of the Postgres service running on the host.
-- template (str): The database template name to use, if any.
-
-
-.. code-block:: ini
-
-    [run pg.createdatabase command]
-    pg.createdatabase: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    owner: None
-    port: 5432
-    template: None
-
-pg.createdb
------------
-
-Create a PostgreSQL database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- owner (str): The owner (user/role name) of the new database.
-- port (int): The port number of the Postgres service running on the host.
-- template (str): The database template name to use, if any.
-
-
-.. code-block:: ini
-
-    [run pg.createdb command]
-    pg.createdb: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    owner: None
-    port: 5432
-    template: None
-
-pg.createuser
--------------
-
-Create a PostgreSQL user.
+Work with a PostgreSQL user.
 
 - name (str): The user name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
+- host (str): The host name.
+- op (str): The operation to perform: ``create``, ``drop``, ``exists``.
+- passwd (str): The password for a new user.
+- password (str): The password for the user with sufficient access privileges to execute the command.
+- port (int): The TCP port number.
+- user (str): The name of the user with sufficient access privileges to execute the command.
 
 
 .. code-block:: ini
 
-    [run pg.createuser command]
-    pg.createuser: name
+    [run pgsql.user command]
+    pgsql.user: name
     admin_pass: None
     admin_user: postgres
     host: localhost
+    op: create
     password: None
     port: 5432
-
-pg.database
------------
-
-Create a PostgreSQL database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- owner (str): The owner (user/role name) of the new database.
-- port (int): The port number of the Postgres service running on the host.
-- template (str): The database template name to use, if any.
-
-
-.. code-block:: ini
-
-    [run pg.database command]
-    pg.database: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    owner: None
-    port: 5432
-    template: None
-
-pg.database_exists
-------------------
-
-Determine if a Postgres database exists.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- owner (str): The owner (user/role name) of the new database.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.database_exists command]
-    pg.database_exists: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    port: 5432
-
-pg.db
------
-
-Create a PostgreSQL database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- owner (str): The owner (user/role name) of the new database.
-- port (int): The port number of the Postgres service running on the host.
-- template (str): The database template name to use, if any.
-
-
-.. code-block:: ini
-
-    [run pg.db command]
-    pg.db: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    owner: None
-    port: 5432
-    template: None
-
-pg.dropdatabase
----------------
-
-Remove a PostgreSQL database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.dropdatabase command]
-    pg.dropdatabase: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    port: 5432
-
-pg.dropdb
----------
-
-Remove a PostgreSQL database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.dropdb command]
-    pg.dropdb: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    port: 5432
-
-pg.dropuser
------------
-
-Remove a Postgres user.
-
-- name (str): The user name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.dropuser command]
-    pg.dropuser: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    port: 5432
-
-pg.dump
--------
-
-Export a Postgres database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- file_name (str): The name/path of the export file. Defaults the database name plus ``.sql``.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.dump command]
-    pg.dump: name
-    admin_pass: None
-    admin_user: postgres
-    file_name: None
-    host: localhost
-    port: 5432
-
-pg.dumpdb
----------
-
-Export a Postgres database.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- file_name (str): The name/path of the export file. Defaults the database name plus ``.sql``.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.dumpdb command]
-    pg.dumpdb: name
-    admin_pass: None
-    admin_user: postgres
-    file_name: None
-    host: localhost
-    port: 5432
-
-pg.exists
----------
-
-Determine if a Postgres database exists.
-
-- name (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- owner (str): The owner (user/role name) of the new database.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.exists command]
-    pg.exists: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    port: 5432
-
-pg.user
--------
-
-Create a PostgreSQL user.
-
-- name (str): The user name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run pg.user command]
-    pg.user: name
-    admin_pass: None
-    admin_user: postgres
-    host: localhost
-    password: None
-    port: 5432
-
-psql
-----
-
-Execute a psql command.
-
-- sql (str): The SQL to be executed.
-- database (str): The database name.
-- admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-- admin_user (str): The name of the user with sufficient access privileges to execute the command.
-- host (str): The database host name or IP address.
-- port (int): The port number of the Postgres service running on the host.
-
-
-.. code-block:: ini
-
-    [run psql command]
-    psql: sql
-    database: template1
-    host: localhost
-    password: None
-    port: 5432
-    user: postgres
 
 POSIX
 =====
