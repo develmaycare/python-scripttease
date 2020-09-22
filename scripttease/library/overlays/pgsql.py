@@ -6,13 +6,12 @@ from ..commands import Command
 
 __all__ = (
     "PGSQL_MAPPINGS",
-    "pg_create_database",
-    "pg_create_user",
-    "pg_database_exists",
-    "pg_drop_database",
-    "pg_drop_user",
-    "pg_dump_database",
-    "psql",
+    "pgsql_create",
+    "pgsql_drop",
+    "pgsql_dump",
+    "pgsql_exec",
+    "pgsql_exists",
+    "pgsql_user",
 )
 
 # Functions
@@ -52,11 +51,11 @@ def _get_pgsql_command(name, host="localhost", password=None, port=5432, user="p
     return a
 
 
-def pg_create_database(name, admin_pass=None, admin_user="postgres", host="localhost", owner=None, port=5432,
-                       template=None, **kwargs):
+def pgsql_create(database, admin_pass=None, admin_user="postgres", host="localhost", owner=None, port=5432, template=None,
+              **kwargs):
     """Create a PostgreSQL database.
 
-    - name (str): The database name.
+    - database (str): The database name.
     - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
     - admin_user (str): The name of the user with sufficient access privileges to execute the command.
     - host (str): The database host name or IP address.
@@ -77,63 +76,15 @@ def pg_create_database(name, admin_pass=None, admin_user="postgres", host="local
     if template is not None:
         base.append("--template=%s" % template)
 
-    base.append(name)
+    base.append(database)
 
     return Command(" ".join(base), **kwargs)
 
 
-def pg_create_user(name, admin_pass=None, admin_user="postgres", host="localhost", password=None, port=5432, **kwargs):
-    """Create a PostgreSQL user.
-
-    - name (str): The user name.
-    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
-    - host (str): The database host name or IP address.
-    - port (int): The port number of the Postgres service running on the host.
-
-    """
-    # Postgres commands always run without sudo because the -U may be provided.
-    kwargs['sudo'] = False
-
-    # Assemble the command.
-    base = _get_pgsql_command("createuser", host=host, password=admin_pass, port=port)
-    base.append("-DRS")
-    base.append(name)
-
-    if password is not None:
-        base.append("&& psql -h %s -U %s" % (host, admin_user))
-        base.append("-c \"ALTER USER %s WITH ENCRYPTED PASSWORD '%s';\"" % (name, password))
-
-    return Command(" ".join(base), **kwargs)
-
-
-def pg_database_exists(name, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
-    """Determine if a Postgres database exists.
-
-    - name (str): The database name.
-    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
-    - host (str): The database host name or IP address.
-    - owner (str): The owner (user/role name) of the new database.
-    - port (int): The port number of the Postgres service running on the host.
-
-    """
-    # Postgres commands always run without sudo because the -U may be provided. However, sudo may be required for
-    # file writing.
-    # kwargs['sudo'] = False
-
-    kwargs.setdefault("register", "%s_db_exists" % name)
-
-    base = _get_pgsql_command("psql", host=host, password=admin_pass, port=port, user=admin_user)
-    base.append(r"-lqt | cut -d \| -f 1 | grep -qw %s" % name)
-
-    return Command(" ".join(base), **kwargs)
-
-
-def pg_drop_database(name, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
+def pgsql_drop(database, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
     """Remove a PostgreSQL database.
 
-    - name (str): The database name.
+    - database (str): The database name.
     - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
     - admin_user (str): The name of the user with sufficient access privileges to execute the command.
     - host (str): The database host name or IP address.
@@ -145,36 +96,15 @@ def pg_drop_database(name, admin_pass=None, admin_user="postgres", host="localho
 
     # Assemble the command.
     base = _get_pgsql_command("dropdb", host=host, password=admin_pass, port=port, user=admin_user)
-    base.append(name)
+    base.append(database)
 
     return  Command(" ".join(base), **kwargs)
 
 
-def pg_drop_user(name, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
-    """Remove a Postgres user.
-
-    - name (str): The user name.
-    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
-    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
-    - host (str): The database host name or IP address.
-    - port (int): The port number of the Postgres service running on the host.
-
-    """
-    # Postgres commands always run without sudo because the -U may be provided.
-    kwargs['sudo'] = False
-
-    # Assemble the command.
-    base = _get_pgsql_command("dropuser", host=host, password=admin_pass, port=port, user=admin_user)
-    base.append(name)
-
-    return Command(" ".join(base), **kwargs)
-
-
-def pg_dump_database(name, admin_pass=None, admin_user="postgres", file_name=None, host="localhost", port=5432,
-                     **kwargs):
+def pgsql_dump(database, admin_pass=None, admin_user="postgres", file_name=None, host="localhost", port=5432, **kwargs):
     """Export a Postgres database.
 
-    - name (str): The database name.
+    - database (str): The database name.
     - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
     - admin_user (str): The name of the user with sufficient access privileges to execute the command.
     - file_name (str): The name/path of the export file. Defaults the database name plus ``.sql``.
@@ -182,21 +112,21 @@ def pg_dump_database(name, admin_pass=None, admin_user="postgres", file_name=Non
     - port (int): The port number of the Postgres service running on the host.
 
     """
-    _file_name = file_name or "%s.sql" % name
+    _file_name = file_name or "%s.sql" % database
 
     # Postgres commands always run without sudo because the -U may be provided.
-    kwargs['sudo'] = False
+    # kwargs['sudo'] = False
 
     # Assemble the command.
     base = _get_pgsql_command("pg_dump", host=host, password=admin_pass, port=port, user=admin_user)
     base.append("--column-inserts")
     base.append("--file=%s" % _file_name)
-    base.append(name)
+    base.append(database)
 
     return Command(" ".join(base), **kwargs)
 
 
-def psql(sql, database="template1", host="localhost", password=None, port=5432, user="postgres", **kwargs):
+def pgsql_exec(sql, database="template1", host="localhost", password=None, port=5432, user="postgres", **kwargs):
     """Execute a psql command.
 
     - sql (str): The SQL to be executed.
@@ -218,20 +148,79 @@ def psql(sql, database="template1", host="localhost", password=None, port=5432, 
     return Command(" ".join(base), **kwargs)
 
 
+def pgsql_exists(database, admin_pass=None, admin_user="postgres", host="localhost", port=5432, **kwargs):
+    """Determine if a Postgres database exists.
+
+    - database (str): The database name.
+    - admin_pass (str): The password for the user with sufficient access privileges to execute the command.
+    - admin_user (str): The name of the user with sufficient access privileges to execute the command.
+    - host (str): The database host name or IP address.
+    - owner (str): The owner (user/role name) of the new database.
+    - port (int): The port number of the Postgres service running on the host.
+
+    """
+    # Postgres commands always run without sudo because the -U may be provided.
+    kwargs['sudo'] = False
+    kwargs.setdefault("register", "pgsql_db_exists")
+
+    base = _get_pgsql_command("psql", host=host, password=admin_pass, port=port, user=admin_user)
+    base.append(r"-lqt | cut -d \| -f 1 | grep -qw %s" % database)
+
+    return Command(" ".join(base), **kwargs)
+
+
+def pgsql_user(name, admin_pass=None, admin_user="postgres", host="localhost", op="create", password=None, port=5432, **kwargs):
+    """Work with a PostgreSQL user.
+
+    - name (str): The user name.
+    - host (str): The host name.
+    - op (str): The operation to perform: ``create``, ``drop``, ``exists``.
+    - passwd (str): The password for a new user.
+    - password (str): The password for the user with sufficient access privileges to execute the command.
+    - port (int): The TCP port number.
+    - user (str): The name of the user with sufficient access privileges to execute the command.
+
+    """
+    # Postgres commands always run without sudo because the -U may be provided.
+    kwargs['sudo'] = False
+
+    if op == "create":
+        kwargs.setdefault("comment", "create %s postgres user" % name)
+        # Assemble the command.
+        base = _get_pgsql_command("createuser", host=host, password=admin_pass, port=port)
+        base.append("-DRS")
+        base.append(name)
+
+        if password is not None:
+            base.append("&& psql -h %s -U %s" % (host, admin_user))
+            base.append("-c \"ALTER USER %s WITH ENCRYPTED PASSWORD '%s';\"" % (name, password))
+
+        return Command(" ".join(base), **kwargs)
+    elif op == "drop":
+        kwargs.setdefault("comment", "drop %s postgres user" % name)
+        base = _get_pgsql_command("dropuser", host=host, password=admin_pass, port=port, user=admin_user)
+        base.append(name)
+
+        return Command(" ".join(base), **kwargs)
+    elif op == "exists":
+        kwargs.setdefault("comment", "determine if %s postgres user exits" % name)
+        kwargs.setdefault("register", "pgsql_use_exists")
+
+        base = _get_pgsql_command("psql", host=host, password=admin_pass, port=port, user=admin_user)
+
+        sql = "SELECT 1 FROM pgsql_roles WHERE rolname='%s'" % name
+        base.append('-c "%s"' % sql)
+
+        return Command(" ".join(base), **kwargs)
+    else:
+        raise NameError("Unrecognized or unsupported Postgres user operation: %s" % op)
+
+
 PGSQL_MAPPINGS = {
-    'pg.client': psql,
-    'pg.createdatabase': pg_create_database,
-    'pg.createdb': pg_create_database,
-    'pg.createuser': pg_create_user,
-    'pg.database': pg_create_database,
-    'pg.database_exists': pg_database_exists,
-    'pg.db': pg_create_database,
-    'pg.dropdatabase': pg_drop_database,
-    'pg.dropdb': pg_drop_database,
-    'pg.dropuser': pg_drop_user,
-    'pg.dump': pg_dump_database,
-    'pg.dumpdb': pg_dump_database,
-    'pg.exists': pg_database_exists,
-    'pg.user': pg_create_user,
-    'psql': psql,
+    'pgsql.create': pgsql_create,
+    'pgsql.drop': pgsql_drop,
+    'pgsql.dump': pgsql_dump,
+    'pgsql.exists': pgsql_exists,
+    'pgsql.sql': pgsql_exec,
+    'pgsql.user': pgsql_user,
 }
