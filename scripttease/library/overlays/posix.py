@@ -27,6 +27,7 @@ __all__ = (
     "sed",
     "symlink",
     "touch",
+    "wait",
     "Function",
     "Prompt",
 )
@@ -542,6 +543,17 @@ def touch(path, **kwargs):
 
     return Command("touch %s" % path, **kwargs)
 
+
+def wait(seconds, **kwargs):
+    """Pause execution for a number of seconds.
+
+    - seconds (int): The number of seconds to wait.
+
+    """
+    kwargs.setdefault("comment", "pause for %s seconds" % seconds)
+
+    return Command("sleep %s" % seconds, **kwargs)
+
 # Classes
 
 
@@ -740,5 +752,6 @@ POSIX_MAPPINGS = {
     'ssl': certbot,
     'symlink': symlink,
     'touch': touch,
+    'wait': wait,
     'write': file_write,
 }

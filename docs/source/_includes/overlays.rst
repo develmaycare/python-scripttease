@@ -898,6 +898,19 @@ Touch a file or directory.
     [run touch command]
     touch: path
 
+wait
+----
+
+Pause execution for a number of seconds.
+
+- seconds (int): The number of seconds to wait.
+
+
+.. code-block:: ini
+
+    [run wait command]
+    wait: seconds
+
 write
 -----
 

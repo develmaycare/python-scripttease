@@ -219,6 +219,12 @@ def test_touch():
     assert "touch /path/to/file.txt" in c.get_statement()
 
 
+def test_wait():
+    c = wait(5)
+    s = c.get_statement()
+    assert 'sleep 5' in s
+
+
 class TestFunction(object):
 
     def test_to_string(self):
