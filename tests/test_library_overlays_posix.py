@@ -113,6 +113,12 @@ def test_perms():
     assert "chmod -R 755 /path/to/dir" in s
 
 
+def test_prompt():
+    # This is just a placeholder to test the prompt() interface. See TestPrompt.
+    c = prompt("testing")
+    assert isinstance(c, Prompt)
+
+
 def test_remove():
     c = remove("/path/to/dir", force=True, recursive=True)
     s = c.get_statement()
@@ -222,3 +228,49 @@ class TestFunction(object):
         assert "# A test function." in s
         assert "function testing()" in s
         assert "touch /path/to/file.txt" in s
+
+
+class TestPrompt(object):
+
+    def test_init(self):
+        c = Prompt("testing", choices=["yes", "no", "maybe"])
+        assert type(c.choices) is list
+
+        c = Prompt("testing", choices="yes, no, maybe")
+        assert type(c.choices) is list
+
+        c = Prompt("testing")
+        assert c.choices is None
+
+    def test_get_dialog_statement(self):
+        c = Prompt("testing", choices=["yes", "no", "maybe"], fancy=True)
+        s = c.get_statement()
+        assert 'dialog --clear --backtitle "Input" --title "Testing"' in s
+        assert '--menu "Select" 15 40 3 "yes" 1 "no" 2 "maybe" 3 2>/tmp/input.txt' in s
+        assert 'testing=$(</tmp/input.txt)' in s
+        assert 'clear' in s
+        assert 'rm /tmp/input.txt' in s
+
+        c = Prompt("testing", fancy=True, help_text="This is a test.")
+        s = c.get_statement()
+        assert 'dialog --clear --backtitle "Input" --title "Testing"' in s
+        assert '--inputbox "This is a test." 8 60 2>/tmp/input.txt' in s
+        assert 'testing=$(</tmp/input.txt)' in s
+        assert 'clear' in s
+        assert 'rm /tmp/input.txt' in s
+
+        c = Prompt("testing", default="it is", fancy=True)
+        s = c.get_statement()
+        assert 'if [[ -z "$testing" ]]; then testing="it is"; fi;' in s
+
+    def test_get_read_statement(self):
+        c = Prompt("testing", choices=["yes", "no", "maybe"])
+        s = c.get_statement()
+        assert 'options=("yes" "no" "maybe")' in s
+        assert 'select opt in "${options[@]}"' in s
+
+        c = Prompt("testing", default="yes")
+        s = c.get_statement()
+        assert 'echo -n "Testing "' in s
+        assert "read testing" in s
+        assert 'then testing="yes"' in s
