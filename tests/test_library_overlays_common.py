@@ -41,3 +41,17 @@ def test_twist():
     c = twist("This is a test.", url="https://example.twist.com/asdf/1234")
     s = c.get_statement(suppress_comment=True)
     print(s)
+
+
+def test_udf():
+    c = udf("testing")
+    s = c.get_statement()
+    assert s == '# <UDF name="testing" label="Testing" />'
+
+    c = udf("testing", default="yes")
+    s = c.get_statement()
+    assert s == '# <UDF name="testing" label="Testing" default="yes" />'
+
+    c = udf("testing", example="example.com")
+    s = c.get_statement()
+    assert s == '# <UDF name="testing" label="Testing" example="example.com" />'

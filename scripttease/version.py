@@ -1,5 +1,5 @@
 DATE = "2020-09-24"
-VERSION = "6.6.0-d"
+VERSION = "6.6.1-d"
 MAJOR = 6
 MINOR = 6
-PATCH = 0
+PATCH = 1

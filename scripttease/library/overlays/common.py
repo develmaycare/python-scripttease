@@ -11,6 +11,7 @@ __all__ = (
     "run",
     "slack",
     "twist",
+    "udf",
 )
 
 # Functions
@@ -110,6 +111,33 @@ def twist(message, title="Notice", url=None, **kwargs):
     return Command(" ".join(a), **kwargs)
 
 
+def udf(name, default=None, example=None, label=None, **kwargs):
+    """Create a UDF prompt for a StackScript.
+
+    - name (str): The name of the variable.
+    - default: The default value.
+    - example: An example value, instead of a default.
+    - label (str): The label for the variable.
+
+    """
+    kwargs.setdefault("prompt for %s in stackscript" % name)
+
+    label = label or name.replace("_", " ").title()
+
+    a = ['# <UDF name="%s" label="%s"' % (name, label)]
+
+    if default is not None:
+        a.append('default="%s"' % default)
+    elif example is not None:
+        a.append('example="%s"' % example)
+    else:
+        pass
+
+    a.append("/>")
+
+    return Command(" ".join(a), **kwargs)
+
+
 # Mappings
 
 COMMON_MAPPINGS = {
@@ -117,5 +145,6 @@ COMMON_MAPPINGS = {
     'run': run,
     'slack': slack,
     'twist': twist,
+    'udf': udf,
     'virtualenv': python_virtualenv,
 }

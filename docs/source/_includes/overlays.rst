@@ -71,6 +71,25 @@ Send a message to Twist.
     title: Notice
     url: None
 
+udf
+---
+
+Create a UDF prompt for a StackScript.
+
+- name (str): The name of the variable.
+- default: The default value.
+- example: An example value, instead of a default.
+- label (str): The label for the variable.
+
+
+.. code-block:: ini
+
+    [run udf command]
+    udf: name
+    default: None
+    example: None
+    label: None
+
 virtualenv
 ----------
 
@@ -702,6 +721,31 @@ Set permissions on a file or directory.
     mode: None
     owner: None
     recursive: False
+
+prompt
+------
+
+Prompt the user for input.
+
+- name (str): The programmatic name of the input.
+- back_title (str): The back title used with the dialog command.
+- choices (str | list): A list of valid choices.
+- default: The default value.
+- fancy (bool): Use a dialog command for the prompt.
+- help_text (str): The text to display with the dialog command.
+- label (str): The label for the input.
+
+
+.. code-block:: ini
+
+    [run prompt command]
+    prompt: name
+    back_title: Input
+    choices: None
+    default: None
+    fancy: False
+    help_text: None
+    label: None
 
 remove
 ------

@@ -316,6 +316,17 @@ def perms(path, group=None, mode=None, owner=None, recursive=False, **kwargs):
 
 
 def prompt(name, back_title="Input", choices=None, default=None, fancy=False, help_text=None, label=None, **kwargs):
+    """Prompt the user for input.
+
+    - name (str): The programmatic name of the input.
+    - back_title (str): The back title used with the dialog command.
+    - choices (str | list): A list of valid choices.
+    - default: The default value.
+    - fancy (bool): Use a dialog command for the prompt.
+    - help_text (str): The text to display with the dialog command.
+    - label (str): The label for the input.
+
+    """
     return Prompt(
         name,
         back_title=back_title,
@@ -720,6 +731,7 @@ POSIX_MAPPINGS = {
     'mkdir': mkdir,
     'move': move,
     'perms': perms,
+    'prompt': prompt,
     'remove': remove,
     'rename': rename,
     'rsync': rsync,
