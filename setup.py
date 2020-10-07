@@ -19,7 +19,13 @@ setup(
     long_description_content_type="text/markdown",
     author='Shawn Davis',
     author_email='shawn@develmaycare.com',
-    url='https://github.com/develmaycare/python-scripttease',
+    url='https://develmaycare.com/products/python/scripttease/',
+    download_url='https://github.com/develmaycare/python-scripttease',
+    project_urls={
+        'Documentation': "https://docs.develmaycare.com/en/python-scripttease/latest/",
+        'Source': "https://github.com/develmaycare/python-scripttease",
+        'Tracker': "https://github.com/develmaycare/python-scripttease/issues/"
+    },
     packages=find_packages(exclude=["tests", "tests.*"]),
     include_package_data=True,
     install_requires=[

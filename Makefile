@@ -54,6 +54,10 @@ lines:
 publish:
 	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*;
 
+#> secure - Run security checks on the code base.
+secure:
+	bandit -r $(PACKAGE_NAME);
+
 #> tests - Run unit tests and generate coverage report.
 tests:
 	coverage run --source=. -m pytest;

@@ -7,32 +7,21 @@ Getting Started
 System Requirements
 ===================
 
-TODO
+Python 3.6 or greater is required.
 
 Install
 =======
 
-TODO
+To install:
+
+.. code-block:: bash
+
+    pip install python-scripttease;
 
 Configuration
 =============
 
-TODO
-
-Examples
-========
-
-TODO
-
-Next Steps
-==========
-
-TODO
-
-Resources
-=========
-
-TODO
+See :ref:`topics-configuration` for creating a command configuration file.
 
 FAQs
 ====

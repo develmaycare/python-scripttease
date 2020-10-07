@@ -32,11 +32,6 @@ Pull Requests
 
 Pull requests are welcome. Such requests should be associated with an issue. We may ignore pull requests that do not have a corresponding issue, so create an issue if one does not already exist.
 
-Translations
-------------
-
-TODO: Translations help make Script Tease available to more people around the world.
-
 Blogging
 --------
 
@@ -44,7 +39,7 @@ You may help spread awareness of Script Tease by writing blog posts. We are happ
 
 You may also provide us with a guest post to be included on our blog.
 
-.. _Let us know if you've created a blog post: https://develmaycare.com/contact/?product=ScriptTease
+.. _Let us know if you've created a blog post: https://develmaycare.com/contact/?product=Script%20Tease
 
 .. note::
     We reserve the right to proof and approve or decline all content posted on our web site.
@@ -52,12 +47,12 @@ You may also provide us with a guest post to be included on our blog.
 Development
 ===========
 
-TODO
-
 Setting Up For Development
 --------------------------
 
-TODO
+1. Clone the repo at https://github.com/develmaycare/python-scripttease
+2. Create a virtual environment and install the requirements from ``requirements.pip``
+3. See :ref:`how-to`.
 
 Style Guide
 -----------
@@ -71,16 +66,6 @@ Script Tease follows `PEP8`_ and (where appropriate) the `Django style guide`_ a
 We *do* make a few exceptions and provide additional guidance which is documented in our `developer docs`_.
 
 .. _developer docs: https://docs.develmaycare.com/en/developer/
-
-Tips for Successful Development
--------------------------------
-
-TODO
-
-Getting Help
-------------
-
-TODO
 
 Dependencies
 ============
@@ -105,7 +90,7 @@ Script Tease follows a loose form of `semantic versioning`_. The use of semantic
 Cadence
 -------
 
-Prior to the 1.0 release, new features may be released at any time. After the 1.0 release, new features are planned for release every 3 months. Patch-level changes (to fix bugs or security issues) are always released as needed.
+New features (and especially new overlays) are planned for release every 3 months. Patch-level changes (to fix bugs or security issues) are always released as needed.
 
 Long-Term Support
 -----------------

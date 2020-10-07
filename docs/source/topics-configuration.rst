@@ -67,9 +67,14 @@ Example of an "itemized" command:
 
 .. code-block:: ini
 
+    [create multiple directories]
+    mkdir: /var/www/domains/example_com/$item
+    items: www, www/assets, www/content
+    recursive:  yes
+
     [touch a bunch of files]
-    touch = /var/www/domains/example_com/www/$item
-    items = index.html, assets/index.html, content/index.html
+    touch: /var/www/domains/example_com/www/$item
+    items: index.html, assets/index.html, content/index.html
 
 .. note::
     Command itemization may vary with the command type.
