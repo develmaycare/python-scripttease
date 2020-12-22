@@ -49,11 +49,15 @@ class Config(Parser):
                     command_name = key
 
                     # Arguments surrounded by quotes are considered to be one argument. All others are split into a
-                    # list to be passed to the callback.
-                    if value[0] == '"':
-                        args.append(value.replace('"', ""))
-                    else:
-                        args = value.split(" ")
+                    # list to be passed to the callback. It is also possible that this is a call where no arguments are
+                    # present, so the whole thing is wrapped to protect against an index error.
+                    try:
+                        if value[0] == '"':
+                            args.append(value.replace('"', ""))
+                        else:
+                            args = value.split(" ")
+                    except IndexError:
+                        pass
                 else:
                     _key, _value = self._get_key_value(key, value)
 
