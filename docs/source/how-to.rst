@@ -176,3 +176,61 @@ The twist function may be used to send a message to Twist, which requires some a
     [post a message to twist]
     twist: "This is a test message."
     url: the URL you created goes here
+
+Use Script Tease With Common Kit
+================================
+
+Since the focus of Script Tease is to convert plain text instructions into valid command line statements, it does *not* provide support for executing those statements either locally or remotely. However, The shell component of `python-commonkit`_ *does* provide support for executing commands in local POSIX environments.
+
+.. _python-commonkit: https://docs.develmaycare.com/en/python-commonkit/stable/components/#module-commonkit.shell
+
+Here is an example of how to use these packages together:
+
+.. code-block:: python
+
+    from commonkit.shell import Command
+    from scripttease.parsers.utils import load_commands
+
+    def execute(step):
+        command = Command(
+            step.statement,
+            comment=step.comment,
+            path=step.cd,
+            prefix=step.prefix,
+            shell=step.shell
+        )
+
+        # Sudo is a different class, but identical in behavior.
+        command.sudo = step.sudo
+
+        if command.run():
+            print("[success] %s" % step.comment)
+        else:
+            print("[failure] %s" % step.comment)
+            if step.stop:
+                print("I can't go on: %s" % command.error)
+                exit(command.code)
+
+    # Load SCRIPT TEASE commands from an INI file. These are instances of either Command or ItemizedCommand found in
+    # scripttease.library.commands
+    steps = load_commands("path/to/steps.ini")
+
+    # A failure to load results in None.
+    if steps is None:
+        print("Failed to load steps.")
+        exit(1)
+
+    # Iterate through each step to create a COMMON KIT command.
+    for step in steps:
+
+        # To preview ...
+        # print(step.get_statement(cd=True))
+
+        if step.is_itemized:
+            for substep in step.get_commands():
+                execute(substep)
+        else:
+            execute(step)
+
+Common Kit is already a dependency of Script Tease so it is installed by default. The ``execute()`` function is a shortcut that helps deal with itemized commands.  The path (``step.cd``) is automatically handled by Common Kit's Command class.
+

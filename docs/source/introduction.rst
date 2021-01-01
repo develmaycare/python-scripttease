@@ -9,6 +9,8 @@ Overview
 
 Script Tease is a library and command line tool for generating commands programmatically or (especially) using configuration files.
 
+The primary focus (and limit) is to convert plain text instructions into valid command line statements for a given platform (see `Overlays`_). It does *not* provide support for executing those statements.
+
 Concepts
 ========
 
