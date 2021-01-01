@@ -106,7 +106,7 @@ class Command(object):
             a.append("%s &&" % self.prefix)
 
         if self.sudo:
-            statement = "sudo -u %s %s" % (self.sudo.user, self._get_statement())
+            statement = "%s %s" % (self.sudo, self._get_statement())
         else:
             statement = self._get_statement()
 
@@ -146,6 +146,11 @@ class Command(object):
 
         """
         return name in self._attributes
+
+    @property
+    def is_itemized(self):
+        """Always returns ``False``."""
+        return False
 
     def set_attribute(self, name, value):
         """Set the value of a dynamic attribute.
@@ -218,7 +223,7 @@ class ItemizedCommand(object):
 
         return a
 
-    def get_statement(self, cd=False):
+    def get_statement(self, cd=False, suppress_comment=False):
         """Override to get multiple commands."""
         kwargs = self.kwargs.copy()
         comment = kwargs.pop("comment", "execute multiple commands")
@@ -228,7 +233,7 @@ class ItemizedCommand(object):
 
         commands = self.get_commands()
         for c in commands:
-            a.append(c.get_statement(cd=cd))
+            a.append(c.get_statement(cd=cd, suppress_comment=suppress_comment))
             a.append("")
 
         # for item in self.items:
@@ -252,6 +257,11 @@ class ItemizedCommand(object):
 
         """
         return name in self.kwargs
+
+    @property
+    def is_itemized(self):
+        """Always returns ``True``."""
+        return True
 
     def set_attribute(self, name, value):
         """Set the value of a dynamic attribute.
@@ -286,3 +296,9 @@ class Sudo(object):
 
     def __bool__(self):
         return self.enabled
+
+    def __str__(self):
+        if self.enabled:
+            return "sudo -u %s" % self.user
+
+        return ""
