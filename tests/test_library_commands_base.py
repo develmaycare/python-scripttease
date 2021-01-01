@@ -57,6 +57,10 @@ class TestCommand(object):
         assert c.sudo.user == "root"
         assert c.sudo.enabled is False
 
+    def test_is_itemized(self):
+        c = Command("ls -ls")
+        assert c.is_itemized is False
+
     def test_repr(self):
         c = Command("ls -ls", comment="listing")
         assert repr(c) == "<Command listing>"
@@ -94,6 +98,10 @@ class TestItemizedCommand(object):
         c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
         assert c.has_attribute("testing") is False
 
+    def test_is_itemized(self):
+        c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
+        assert c.is_itemized is True
+
     def test_repr(self):
         c = ItemizedCommand(python_pip, ["Pillow", "psycopg2-binary", "django"], "$item")
         assert repr(c) == "<ItemizedCommand python_pip>"
@@ -103,3 +111,20 @@ class TestItemizedCommand(object):
         assert c.testing is None
         c.set_attribute("testing", True)
         assert c.testing is True
+
+
+class TestSudo(object):
+
+    def test_bool(self):
+        s = Sudo()
+        assert bool(s) is False
+
+        s = Sudo(True)
+        assert bool(s) is True
+
+    def test_str(self):
+        s = Sudo()
+        assert str(s) == ""
+
+        s = Sudo(True)
+        assert str(s) == "sudo -u root"
