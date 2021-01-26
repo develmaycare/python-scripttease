@@ -198,6 +198,11 @@ class ItemizedCommand(object):
         self.kwargs = kwargs
         self.name = name
 
+        # Set defaults for when ItemizedCommand is referenced directly before individual commands are instantiated. For
+        # example, when command filtering occurs.
+        self.kwargs.setdefault("environments", list())
+        self.kwargs.setdefault("tags", list())
+
     def __getattr__(self, item):
         return self.kwargs.get(item)
 

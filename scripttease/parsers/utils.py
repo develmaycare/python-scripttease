@@ -38,7 +38,7 @@ def filter_commands(commands, environments=None, tags=None):
     """
     filtered = list()
     for command in commands:
-        if environments is not None:
+        if environments is not None and len(command.environments) > 0:
             if not any_list_item(environments, command.environments):
                 continue
         
