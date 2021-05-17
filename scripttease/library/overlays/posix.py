@@ -744,6 +744,7 @@ POSIX_MAPPINGS = {
     'move': move,
     'perms': perms,
     'prompt': prompt,
+    'push': rsync,
     'remove': remove,
     'rename': rename,
     'rsync': rsync,
