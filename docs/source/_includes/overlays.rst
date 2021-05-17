@@ -528,7 +528,7 @@ Work with a PostgreSQL user.
 POSIX
 =====
 
-Posix commands form the basis of overlays for nix platforms.
+Posix commands form the basis of overlays for *nix platforms.
 
 append
 ------
@@ -735,6 +735,36 @@ Prompt the user for input.
     fancy: False
     help_text: None
     label: None
+
+push
+----
+
+Synchronize a directory structure.
+
+- source (str): The source directory.
+- target (str): The target directory.
+- delete (bool): Indicates target files that exist in source but not in target should be removed.
+- exclude (str): The path to an exclude file.
+- host (str): The host name or IP address. This causes the command to run over SSH.
+- key_file (str): The privacy SSH key (path) for remote connections. User expansion is automatically applied.
+- links (bool): Include symlinks in the sync.
+- port (int): The SSH port to use for remote connections.
+- recursive (bool): Indicates source contents should be recursively synchronized.
+- user (str): The user name to use for remote connections.
+
+
+.. code-block:: ini
+
+    [run push command]
+    push: source target
+    delete: False
+    exclude: None
+    host: None
+    key_file: None
+    links: True
+    port: 22
+    recursive: True
+    user: None
 
 remove
 ------

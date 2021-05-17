@@ -36,7 +36,7 @@ __all__ = (
 
 
 def command_exists(name):
-    """Indicates whether a given command exists in this overaly.
+    """Indicates whether a given command exists in this overlay.
 
     :param name: The name of the command.
     :type name: str

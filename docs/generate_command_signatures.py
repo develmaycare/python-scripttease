@@ -115,7 +115,7 @@ print_description("Postgres commands.")
 print_mapping(PGSQL_MAPPINGS)
 
 print_heading("POSIX")
-print_description("Posix commands form the basis of overlays for nix platforms.")
+print_description("Posix commands form the basis of overlays for *nix platforms.")
 print_mapping(POSIX_MAPPINGS, excludes=["func"])
 
 exclude_from_centos = COMMON_MAPPINGS.copy()
