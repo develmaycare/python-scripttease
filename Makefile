@@ -3,6 +3,9 @@
 # The path to source code to be counted with cloc.
 PACKAGE_NAME := scripttease
 
+# The name of the project on disk.
+PROJECT_NAME := python-scripttease
+
 # The directory where test coverage is generated.
 COVERAGE_PATH := docs/build/html/coverage
 
@@ -16,6 +19,12 @@ help:
 	@echo "------------------------------------------------------------------------------"
 	@cat Makefile | grep "^#>" | sed 's/\#\> //g';
 	@echo ""
+
+#> backup - Create a backup of the project.
+backup:
+	cd ~/Work && tar -czvf $(PROJECT_NAME).tgz $(PROJECT_NAME);
+	mv ~/Work/$(PROJECT_NAME).tgz ~/Dropbox/backups/;
+
 
 #> dist - Create a distribution of the package.
 dist:
