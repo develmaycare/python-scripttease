@@ -13,13 +13,11 @@ ubuntu = {
         'test': "apachectl configtest",
     },
     'install': "apt-get install -y {{ args[0] }}",
+    'reload': "service {{ args[0] }} reload",
+    'restart': "service {{ args[0] }} restart",
     'run': "{{ args[0] }}",
-    'service': {
-        'reload': "service {{ args[0] }} reload",
-        'restart': "service {{ args[0] }} restart",
-        'start': "service {{ args[0] }} start",
-        'stop': "service {{ args[0] }} stop",
-    },
+    'start': "service {{ args[0] }} start",
+    'stop': "service {{ args[0] }} stop",
     'system': {
         'reboot': "reboot",
         'update': "apt-get update -y",

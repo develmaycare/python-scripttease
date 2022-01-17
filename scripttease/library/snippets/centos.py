@@ -9,6 +9,7 @@ centos = {
     'install': "yum install -y {{ args[0] }}",
     'reload': "systemctl reload {{ args[0] }}",
     'restart': "systemctl restart {{ args[0] }}",
+    'run': "{{ args[0] }}",
     'start': "systemctl start {{ args[0] }}",
     'stop': "systemctl stop {{ args[0] }}",
     'system': {
@@ -17,6 +18,7 @@ centos = {
         'upgrade': "yum update -y",
     },
     'uninstall': "yum remove -y {{ args[0] }}",
+    'upgrade': "yum upgrade -y {{ args[0] }}",
     'user': {
         'create': [
             "adduser {{ args[0] }}",

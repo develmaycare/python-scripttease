@@ -20,6 +20,28 @@ __all__ = (
 class BaseLoader(File):
 
     def __init__(self, path,  context=None, locations=None, mappings=None, profile="ubuntu", **kwargs):
+        """Initialize the loader.
+
+        :param path: The path to the command file.
+        :type path: str
+
+        :param context: Global context that may be used when to parse the command file, snippets, and templates.
+        :type context: dict
+
+        :param locations: A list of paths where templates and other external files may be found. The directory in which
+                          the command file exists is added automatically.
+        :type locations: list[str]
+
+        :param mappings: A mapping of canonical command names and their snippets, organized by ``profile``.
+        :type mappings: dict
+
+        :param profile: The profile (operating system or platform) to be used.
+        :type profile: str
+
+        kwargs are stored as ``options`` and may include any of the common options for command configuration. These may
+        be supplied as defaults for snippet processing.
+
+        """
         self.context = context or dict()
         self.is_loaded = False
         self.locations = locations or list()
@@ -28,10 +50,11 @@ class BaseLoader(File):
         self.profile = profile
         self.snippets = list()
 
+        super().__init__(path)
+
         # Always include the path to the current file in locations.
         self.locations.insert(0, self.directory)
-
-        super().__init__(path)
+        # command.locations.append(os.path.join(self.directory, "templates"))
 
     def get_snippets(self):
         a = list()
@@ -131,37 +154,6 @@ class BaseLoader(File):
 
         return read_file(self.path)
 
-    # def _get_command(self, name, *args, **kwargs):
-    #     args = list(args)
-    #
-    #     if name not in self.mappings:
-    #         return None
-    #
-    #     if type(self.mappings[name]) is dict:
-    #         sub = args.pop(0)
-    #         subs = self.mappings[name]
-    #         if sub not in subs:
-    #             return None
-    #
-    #         _command = subs[sub]
-    #     else:
-    #         _command = self.mappings[name]
-    #
-    #     context = self.context.copy()
-    #     context['args'] = args
-    #     context.update(kwargs)
-    #
-    #     if type(_command) in (list, tuple):
-    #         # print(" ".join(_command))
-    #         a = list()
-    #         for i in _command:
-    #             i = parse_jinja_string(i, context)
-    #             a.append(i)
-    #
-    #         return " ".join(a)
-    #
-    #     return parse_jinja_string(_command, context)
-
     # noinspection PyMethodMayBeStatic
     def _get_key_value(self, key, value):
         """Process a key/value pair from an INI section.
@@ -204,6 +196,13 @@ class BaseLoader(File):
 
 
 class Snippet(object):
+    """A snippet is a pseudo-command which collects the content of the snippet as well as the parameters that may be
+    used to create an executable statement.
+
+    The purpose of a snippet is *not* to provide command execution, but to capture the results of a command requested in
+    a command configuration file.
+
+    """
 
     def __init__(self, name, args=None, content=None, context=None, kwargs=None, parser=None):
         """Initialize a snippet.
@@ -252,11 +251,37 @@ class Snippet(object):
         return str(self.name)
 
     def get_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
+        """Get the command statement represented by the snippet.
+
+        :param cd: Indicates whether the change directory option should be included in the output. The ``cd`` option
+                   must also be provided for the command in the configuration file.
+        :type cd: bool
+
+        :param include_comment: Indicates whether the command comment should be included in the output.
+        :type include_comment: bool
+
+        :param include_register: Indicates whether an additional statement to capture the result of the command should
+                                 be included in the output. The register option must also be defined for the command in
+                                 the configuration file.
+        :type include_register: bool
+
+        :param include_stop: Indicates whether an additional statement to exit on failure of the command should be
+                             included in the output. The stop option must also be defined for the command in the
+                             configuration file.
+        :type include_stop: bool
+
+        :rtype: str
+
+        .. note::
+            The boolean options allow implementers to exercise control over the output of the statement, so that the
+            snippet may be used in ways appropriate to the implementation.
+
+        """
         lines = list()
         if self.comment and include_comment:
             lines.append("# %s" % self.comment)
 
-        # Handle command itemization. Note that register and stop options are ignored.
+        # Handle snippet itemization. Note that register and stop options are ignored.
         if self.is_itemized:
             for item in self.items:
                 args = list()
@@ -287,7 +312,7 @@ class Snippet(object):
 
             return "\n".join(lines)
 
-        # Handle normal (not itemized) comands.
+        # Handle normal (not itemized) snippets.
         a = list()
         if cd and self.cd is not None:
             a.append("( cd %s &&" % self.cd)
@@ -327,53 +352,26 @@ class Snippet(object):
 
     @property
     def is_itemized(self):
+        """Indicates whether the snippet includes multiple occurrences of the same command.
+
+        :rtype: bool
+
+        """
         s = " ".join(self.args)
         return "$item" in s
 
     @property
     def is_valid(self):
-        return self.content is not None
+        """Indicates whether the snippet is valid.
 
-    # def _get_statement(self):
-    #     if self.is_itemized:
-    #         a = list()
-    #         for item in self.items:
-    #             args = list()
-    #             for arg in self.args:
-    #                 args.append(arg.replace("$item", item))
-    #
-    #             context = self.context.copy()
-    #             context['args'] = args
-    #             context.update(self.kwargs)
-    #
-    #             if type(self.content) is list:
-    #                 b = list()
-    #                 for i in self.content:
-    #                     i = parse_jinja_string(i, context)
-    #                     b.append(i)
-    #
-    #                 a.append(" ".join(b))
-    #             else:
-    #                 a.append(parse_jinja_string(self.content, context))
-    #
-    #         return "\n".join(a)
-    #
-    #     context = self.context.copy()
-    #     context['args'] = self.args
-    #     context.update(self.kwargs)
-    #
-    #     a = list()
-    #     if type(self.content) is list:
-    #         b = list()
-    #         for i in self.content:
-    #             i = parse_jinja_string(i, context)
-    #             b.append(i)
-    #
-    #         a.append(" ".join(b))
-    #     else:
-    #         a.append(parse_jinja_string(self.content, context))
-    #
-    #     return " ".join(a)
+        :rtype: bool
+
+        .. note::
+            This is done by determining if snippet content is not ``None``. The content is found during the loading
+            process when the Snippet instance is created.
+
+        """
+        return self.content is not None
 
     def _parse(self, args=None, kwargs=None):
         """Build the command statement from snippet content.
@@ -477,13 +475,43 @@ class Template(object):
             log.error("Could not parse %s template: %s" % (template, e))
             return None
 
+    # noinspection PyUnusedLocal
     def get_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
-        if self.parser == self.PARSER_SIMPLE:
-            return self._get_simple_statement(cd=cd, include_comment=include_comment, include_register=include_register,
-                                              include_stop=include_stop)
+        lines = list()
+        if include_comment and self.comment is not None:
+            lines.append("# %s" % self.comment)
+
+        # TODO: Backing up a template's target is currently specific to bash.
+        if self.backup_enabled:
+            lines.append('if [[ -f "%s" ]]; then mv %s %s.b; fi;' % (self.target, self.target, self.target))
+
+        # Get the content; e.g. parse the template.
+        content = self.get_content()
+
+        # Templates that are bash scripts will fail to write because of the shebang.
+        if content.startswith("#!"):
+            _content = content.split("\n")
+            first_line = _content.pop(0)
+            lines.append('echo "%s" > %s' % (first_line, self.target))
+            lines.append("cat >> %s << EOF" % self.target)
+            lines.append("\n".join(_content))
+            lines.append("EOF")
         else:
-            return self._get_jinja2_statement(cd=cd, include_comment=include_comment, include_register=include_register,
-                                              include_stop=include_stop)
+            lines.append("cat > %s << EOF" % self.target)
+            lines.append(content)
+            lines.append("EOF")
+
+        if include_register and self.register is not None:
+            lines.append("%s=$?;" % self.register)
+
+            if include_stop and self.stop:
+                lines.append("if [[ $%s -gt 0 ]]; exit 1; fi;" % self.register)
+        elif include_stop and self.stop:
+            lines.append("if [[ $? -gt 0 ]]; exit 1; fi;")
+        else:
+            pass
+
+        return "\n".join(lines)
 
     def get_template(self):
         """Get the template path.
@@ -501,44 +529,9 @@ class Template(object):
 
     @property
     def is_itemized(self):
-        return "$item" in self.target
+        # return "$item" in self.target
+        return False
 
     @property
     def is_valid(self):
         return True
-
-    def _get_command(self, content):
-        """Get the cat command."""
-        output = list()
-
-        # TODO: Template backup is not system safe, but is specific to bash.
-        if self.backup_enabled:
-            output.append('if [[ -f "%s" ]]; then mv %s %s.b; fi;' % (self.target, self.target, self.target))
-
-        if content.startswith("#!"):
-            _content = content.split("\n")
-            first_line = _content.pop(0)
-            output.append('echo "%s" > %s' % (first_line, self.target))
-            output.append("cat >> %s << EOF" % self.target)
-            output.append("\n".join(_content))
-            output.append("EOF")
-        else:
-            output.append("cat > %s << EOF" % self.target)
-            output.append(content)
-            output.append("EOF")
-
-        statement = "\n".join(output)
-
-    # noinspection PyUnusedLocal
-    def _get_jinja2_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
-        """Parse a Jinja2 template."""
-        content = self.get_content()
-        return self._get_command(content)
-
-    # noinspection PyUnusedLocal
-    def _get_simple_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
-        """Parse a "simple" template."""
-        content = self.get_content()
-
-        return self._get_command(content)
-

@@ -11,6 +11,12 @@ from .ubuntu import ubuntu
 
 # Exports
 
+__all__ = (
+    "MAPPINGS",
+    "merge",
+    "merge_dictionaries",
+)
+
 # Functions
 
 
@@ -50,6 +56,6 @@ def merge_dictionaries(first: dict, second: dict) -> dict:
 
 
 MAPPINGS = {
-    'centos': merge(centos, django, messages, mysql, pgsql, posix, py),
+    'centos': merge(centos, django, messages, mysql, pgsql, posix, python),
     'ubuntu': merge(ubuntu, django, messages, mysql, pgsql, posix, python),
 }

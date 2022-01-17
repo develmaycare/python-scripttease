@@ -1,20 +1,26 @@
 from commonkit import parse_jinja_string
 
+DJANGO_EXCLUDED_KWARGS = [
+    "cd",
+    "comment",
+    "environments",
+    "prefix",
+    "register",
+    "shell",
+    "stop",
+    "tags",
+    # "venv", # ?
+]
 
-def django_command_parser(snippet, args=None):
+def django_command_parser(snippet, args=None, excluded_kwargs=None):
+
+    _excluded_kwargs = excluded_kwargs or DJANGO_EXCLUDED_KWARGS
 
     # We need to remove the common options so any remaining keyword arguments are converted to switches for the
     # management command.
     _kwargs = snippet.kwargs.copy()
-    _kwargs.pop("comment")
-    _kwargs.pop("environments", None)
-    _kwargs.pop("prefix", None)
-    _kwargs.pop("cd", None)
-    _kwargs.pop("register", None)
-    _kwargs.pop("shell", None)
-    _kwargs.pop("stop", None)
-    _kwargs.pop("tags", None)
-    _kwargs.pop("venv", None)
+    for name in _excluded_kwargs:
+        _kwargs.pop(name, None)
 
     # We need to remove some parameters for dumpdata and loaddata. Otherwise they end up as switches.
     if snippet.name in ("django.dumpdata", "django.loaddata"):
@@ -94,7 +100,7 @@ django = {
         'command': "./manage.py {{ command_name }} {% if args %}{{ ' '.join(args) }}{% endif %} {{ switches }}",
         'dumpdata': [
             "./manage.py dumpdata {{ app }}{% if model %}.{{ model }}{% endif %}",
-            "--indent=4",
+            # "--indent=4",
             "{{ switches }}",
             '> {{ path }}',
         ],

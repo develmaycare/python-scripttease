@@ -46,6 +46,9 @@ class INILoader(BaseLoader):
             kwargs['comment'] = comment
 
             for key, value in ini.items(comment):
+                if key.startswith("_"):
+                    continue
+
                 # The first key/value pair is the command name and arguments.
                 if count == 0:
                     command_name = key
