@@ -84,7 +84,7 @@ pgsql = {
                 '-U {{ admin_user|default("postgres") }}',
                 '--host={{ host|default("localhost") }}',
                 '--port={{ port|default("5432") }}',
-                "-DRS {{ args[0] }}",
+                "-DRS {{ args[0] }}",  # no create db or roles, and not a superuser
                 '{% if password %}&& psql -U {{ admin_user|default("postgres") }} '
                 '--host={{ host|default("localhost") }} '
                 '--port={{ port|default("5432") }} '

@@ -17,8 +17,14 @@ __all__ = (
 
 
 class YMLLoader(BaseLoader):
+    """Load commands from an YAML file."""
 
     def load(self):
+        """Load the YAML file.
+
+        :rtype: bool
+
+        """
         if not self.exists:
             return False
 

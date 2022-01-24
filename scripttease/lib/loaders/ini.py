@@ -17,14 +17,20 @@ __all__ = (
 
 
 class INILoader(BaseLoader):
+    """Load commands from an INI file."""
 
     def load(self):
+        """Load the INI file.
+
+        :rtype: bool
+
+        """
         if not self.exists:
             return False
 
         if self.context is not None:
             try:
-                content = parse_jinja_template(self.path, self.context)
+                content = parse_jinja_template(self.path, self.get_context())
             except Exception as e:
                 log.error("Failed to process %s INI file as template: %s" % (self.path, e))
                 return False
@@ -65,6 +71,7 @@ class INILoader(BaseLoader):
                     except IndexError:
                         pass
                     except TypeError:
+                        # noinspection PyTypeChecker
                         args.append(True)
                 else:
                     _key, _value = self._get_key_value(key, value)

@@ -28,9 +28,11 @@ ubuntu = {
     'user': {
         # The gecos switch eliminates the prompts.
         # TODO: Deal with user password when creating a user in ubuntu.
-        'create': [
+        'add': [
             "adduser {{ args[0] }} --gecos --disabled-password",
             "{% if home %}--home {{ home }}{% endif %}",
+            "{% if login %}--shell {{ login }}{% endif %}",
+            "{% if system %}--system{% endif %}",
             "{% if groups %}&& {% for group in groups %}adduser {{ args[0] }} {{ group }};{% endfor %}{% endif %}"
 
         ],

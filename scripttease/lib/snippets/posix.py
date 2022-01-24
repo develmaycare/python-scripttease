@@ -14,6 +14,14 @@ posix = {
         "{% if recursive %}-R{% endif %}",
         "{{ args[0] }} {{ args[1] }}"
     ],
+    'dir': [
+        "mkdir",
+        "{% if recursive %}-p{% endif %}",
+        "{% if mode %}-m {{ mode }}{% endif %}",
+        "{{ args[0] }}",
+        "{% if group %}&& chgrp -R {{ group }} {{ args[0] }}{% endif %}",
+        "{% if owner %}&& chown -R {{ owner }} {{ args[0] }}{% endif %}"
+    ],
     'extract': [
         "tar",
         "-xz",
@@ -22,6 +30,12 @@ posix = {
         "{% if exclude %}--exclude {{ exclude }}{% endif %}",
         "{% if strip %}--script-components {{ strip }}{% endif %}",
         '-f {{ args[0] }} {{ to|default("./") }}',
+    ],
+    'file': [
+        "{% if content %}cat > {{ args[0] }} << EOF\n{{ content }}\nEOF{% else %}touch {{ args[0] }}{% endif %}",
+        "{% if mode %}&& chmod {{ mode }} {{ args[0 }}{% endif %}",
+        "{% if group %}&& chgrp {{ group }} {{ args[0] }}{% endif %}",
+        "{% if owner %}&& chown{{ owner }} {{ args[0] }}{% endif %}"
     ],
     'link': [
         "ln -s",

@@ -6,6 +6,12 @@ python = {
         '{% if op == "upgrade" %}--upgrade{% endif %}',
         "{{ args[0] }}",
     ],
+    'pip3': [
+        "{% if venv %}source {{ venv }}/bin/activate &&{%- endif %}",
+        'pip3 {{ op|default("install") }}',
+        '{% if op == "upgrade"%}--upgrade{% endif %}',
+        "{{ args[0] }}",
+    ],
     # 'pip': {
     #     'install': [
     #         "{% if venv %}source {{ venv }} &&{% endif %}",

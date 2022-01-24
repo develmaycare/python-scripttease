@@ -20,9 +20,11 @@ centos = {
     'uninstall': "yum remove -y {{ args[0] }}",
     'upgrade': "yum upgrade -y {{ args[0] }}",
     'user': {
-        'create': [
+        'add': [
             "adduser {{ args[0] }}",
             "{% if home %}--home {{ home }}{% endif %}",
+            "{% if login %}--shell {{ login }}{% endif %}",
+            "{% if system %}--system{% endif %}",
             "{% if groups %}&& {% for group in groups %}gpasswd -a {{ args[0] }} {{ group }};{% endfor %}{% endif %}"
         ],
         'remove': "userdel -r {{ args[0] }}",

@@ -4,7 +4,7 @@ from commonkit import parse_jinja_string, parse_jinja_template, pick, read_file,
 from jinja2.exceptions import TemplateError, TemplateNotFound
 import logging
 import os
-from ..library.snippets.mappings import MAPPINGS
+from ..snippets.mappings import MAPPINGS
 
 log = logging.getLogger(__name__)
 
@@ -12,12 +12,17 @@ log = logging.getLogger(__name__)
 
 __all__ = (
     "BaseLoader",
+    "Snippet",
+    "Sudo",
+    "Template",
 )
+
 
 # Classes
 
 
 class BaseLoader(File):
+    """Base class for loading a command file."""
 
     def __init__(self, path,  context=None, locations=None, mappings=None, profile="ubuntu", **kwargs):
         """Initialize the loader.
@@ -25,14 +30,16 @@ class BaseLoader(File):
         :param path: The path to the command file.
         :type path: str
 
-        :param context: Global context that may be used when to parse the command file, snippets, and templates.
-        :type context: dict
+        :param context: Global context that may be used when to parse the command file, snippets, and templates. This is
+                        converted to a ``dict`` when passed to a Snippet or Template.
+        :type context: scripttease.lib.contexts.Context
 
-        :param locations: A list of paths where templates and other external files may be found. The directory in which
-                          the command file exists is added automatically.
+        :param locations: A list of paths where templates and other external files may be found. The ``templates/``
+                          directory in which the command file exists is added automatically.
         :type locations: list[str]
 
-        :param mappings: A mapping of canonical command names and their snippets, organized by ``profile``.
+        :param mappings: A mapping of canonical command names and their snippets, organized by ``profile``. The profile
+                         is typically an operating system such as ``centos`` or ``ubuntu``.
         :type mappings: dict
 
         :param profile: The profile (operating system or platform) to be used.
@@ -42,7 +49,7 @@ class BaseLoader(File):
         be supplied as defaults for snippet processing.
 
         """
-        self.context = context or dict()
+        self.context = context
         self.is_loaded = False
         self.locations = locations or list()
         self.mappings = mappings or MAPPINGS
@@ -53,10 +60,26 @@ class BaseLoader(File):
         super().__init__(path)
 
         # Always include the path to the current file in locations.
-        self.locations.insert(0, self.directory)
-        # command.locations.append(os.path.join(self.directory, "templates"))
+        self.locations.insert(0, os.path.join(self.directory, "templates"))
+
+    def get_context(self):
+        """Get the context for parsing command snippets.
+
+        :rtype: dict
+
+        """
+        d = self.options.copy()
+        if self.context is not None:
+            d.update(self.context.mapping().copy())
+
+        return d
 
     def get_snippets(self):
+        """Get the snippets found in a config file.
+
+        :rtype: list[scripttease.lib.loaders.base.Snippet]
+
+        """
         a = list()
 
         for canonical_name, args, kwargs in self.snippets:
@@ -66,12 +89,27 @@ class BaseLoader(File):
         return a
 
     def find_snippet(self, name, *args, **kwargs):
+        """Find a named snippet that was defined in a config file.
+
+        :param name: The canonical name (or dotted name) of the snippet.
+        :type name: str
+
+        :rtype: scripttease.lib.loaders.base.Snippet | scripttease.lib.loaders.base.Template
+
+        ``args`` and ``kwargs`` are passed to instantiate the snippet.
+
+        .. important::
+            The snippet may be invalid; always check ``snippet.is_valid``.
+
+        """
         # Templates require special handling.
         if name == "template":
             source = args[0]
             target = args[1]
             kwargs['locations'] = self.locations
-            return Template(source, target, **kwargs)
+            context = kwargs.copy()
+            context.update(self.get_context())
+            return Template(source, target, context=context, **kwargs)
 
         # Convert args to a list so we can update it below.
         _args = list(args)
@@ -84,6 +122,9 @@ class BaseLoader(File):
 
             log.error("Command not found in mappings: %s" % name)
             return Snippet(name, args=_args, kwargs=kwargs)
+
+        # Get the global context for use in snippet instantiation below.
+        context = self.get_context()
 
         # Formal or informal sub-commands exist in a dictionary.
         if type(self.mappings[self.profile][name]) is dict:
@@ -100,27 +141,39 @@ class BaseLoader(File):
                 parser = self.mappings[self.profile][name].get('_parser', None)
 
                 _name = "%s.%s" % (name, sub)
-                return Snippet(_name, args=_args, content=snippet, context=self.context, kwargs=kwargs, parser=parser)
+                return Snippet(_name, args=_args, content=snippet, context=context, kwargs=kwargs, parser=parser)
 
             # Django allows pre-defined as well as adhoc commands. The name of the command is provided as the first
             # argument in the config file. The following statements are only invoked if the possible_sub_command is not
-            # in the django dictionary.
+            # in the django dictionary. The "command" entry in the django dictionary is for handling ad hoc commands.
             if name == "django":
                 sub = _args.pop(0)
                 kwargs['_name'] = sub
-                print(kwargs)
                 snippet = self.mappings[self.profile]['django']['command']
                 parser = self.mappings[self.profile]['django']['_parser']
-                return Snippet("django.%s" % sub, args=_args, content=snippet, context=self.context, kwargs=kwargs,
+                return Snippet("django.%s" % sub, args=_args, content=snippet, context=context, kwargs=kwargs,
                                parser=parser)
 
             log.warning("Sub-command could not be determined for: %s" % name)
-            return Snippet(name, args=list(args), context=self.context, kwargs=kwargs)
+            return Snippet(name, args=list(args), context=context, kwargs=kwargs)
 
         # The found snippet should just be a string.
-        return Snippet(name, args=list(args), content=self.mappings[self.profile][name], kwargs=kwargs)
+        return Snippet(name, args=list(args), content=self.mappings[self.profile][name], context=context, kwargs=kwargs)
 
     def find_snippet_by_dotted_name(self, name, *args, **kwargs):
+        """Find a snippet using it's dotted name.
+
+        :param name: The dotted name of the snippet.
+
+        :param args:
+        :param kwargs:
+
+        ``args`` and ``kwargs`` are passed to instantiate the snippet.
+
+        .. important::
+            The snippet may be invalid; always check ``snippet.is_valid``.
+
+        """
         # This may not exist. If so, None is the value of the Snippet.content attribute.
         snippet = pick(name, self.mappings[self.profile])
 
@@ -129,7 +182,7 @@ class BaseLoader(File):
         parser = pick(builder_name, self.mappings[self.profile])
 
         # Return the snippet instance.
-        return Snippet(name, args=list(args), parser=parser, content=snippet, kwargs=kwargs)
+        return Snippet(name, args=list(args), parser=parser, content=snippet, context=self.get_context(), kwargs=kwargs)
 
     def load(self):
         """Load the command file.
@@ -147,7 +200,7 @@ class BaseLoader(File):
         """
         if self.context is not None:
             try:
-                return parse_jinja_template(self.path, self.context)
+                return parse_jinja_template(self.path, self.context.mapping())
             except Exception as e:
                 log.error("Failed to process %s file as template: %s" % (self.path, e))
                 return None
@@ -156,7 +209,7 @@ class BaseLoader(File):
 
     # noinspection PyMethodMayBeStatic
     def _get_key_value(self, key, value):
-        """Process a key/value pair from an INI section.
+        """Process a key/value pair.
 
         :param key: The key to be processed.
         :type key: str
@@ -166,10 +219,25 @@ class BaseLoader(File):
         :rtype: tuple
         :returns: The key and value, both of which may be modified from the originals.
 
+        This handles special names in the following manner:
+
+        - ``environments``, ``environs``, ``envs``, and ``env`` are treated as a CSV list of environment names
+          if provided as a string. These are normalized to the keyword ``environments``.
+        - ``func`` and ``function`` are normalized to the keyword ``function``. The value is the name of the function to
+          be defined.
+        - ``groups`` is assumed to be a CSV list of groups if provided as a string.
+        - ``items`` is assumed to be a CSV list if provided as a string. These are used to create an "itemized" command.
+        - ``tags`` is assumed to be a CSV list oif provided as a string.
+
+        All other keys are used as is. Values provided as a CSV list are smart cast to a Python value.
+
         """
         if key in ("environments", "environs", "envs", "env"):
             _key = "environments"
-            _value = split_csv(value)
+            if type(value) in (list, tuple):
+                _value = value
+            else:
+                _value = split_csv(value)
         elif key in ("func", "function"):
             _key = "function"
             _value = value
@@ -187,7 +255,10 @@ class BaseLoader(File):
                 _value = split_csv(value)
         elif key == "tags":
             _key = "tags"
-            _value = split_csv(value)
+            if type(value) in (list, tuple):
+                _value = value
+            else:
+                _value = split_csv(value)
         else:
             _key = key
             _value = smart_cast(value)
@@ -199,8 +270,8 @@ class Snippet(object):
     """A snippet is a pseudo-command which collects the content of the snippet as well as the parameters that may be
     used to create an executable statement.
 
-    The purpose of a snippet is *not* to provide command execution, but to capture the results of a command requested in
-    a command configuration file.
+    The purpose of a snippet is *not* to provide command execution, but to capture the parameters of a command defined
+    in a configuration file.
 
     """
 
@@ -434,10 +505,10 @@ class Template(object):
     PARSER_JINJA = "jinja2"
     PARSER_SIMPLE = "simple"
 
-    def __init__(self, source, target, backup=True, parser=None, **kwargs):
+    def __init__(self, source, target, backup=True, parser=PARSER_JINJA, **kwargs):
         self.backup_enabled = backup
         self.context = kwargs.pop("context", dict())
-        self.parser = parser or self.PARSER_JINJA
+        self.parser = parser
         self.locations = kwargs.pop("locations", list())
         self.source = os.path.expanduser(source)
         self.target = target
