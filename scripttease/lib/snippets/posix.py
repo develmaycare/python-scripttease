@@ -33,9 +33,9 @@ posix = {
     ],
     'file': [
         "{% if content %}cat > {{ args[0] }} << EOF\n{{ content }}\nEOF{% else %}touch {{ args[0] }}{% endif %}",
-        "{% if mode %}&& chmod {{ mode }} {{ args[0 }}{% endif %}",
+        "{% if mode %}&& chmod {{ mode }} {{ args[0] }}{% endif %}",
         "{% if group %}&& chgrp {{ group }} {{ args[0] }}{% endif %}",
-        "{% if owner %}&& chown{{ owner }} {{ args[0] }}{% endif %}"
+        "{% if owner %}&& chown {{ owner }} {{ args[0] }}{% endif %}"
     ],
     'link': [
         "ln -s",

@@ -23,21 +23,21 @@ def load_variables(path):
     :param path: The path to the INI file.
     :type path: str
 
-    :rtype: scripttease.lib.contexts.Context
+    :rtype: list[scripttease.lib.contexts.Variable]
 
     """
     if not os.path.exists(path):
         log.warning("Variables file does not exist: %s" % path)
-        return Context()
+        return list()
 
     ini = RawConfigParser()
     try:
         ini.read(path)
     except ParsingError as e:
         log.warning("Failed to parse %s variables file: %s" % (path, str(e)))
-        return Context()
+        return list()
 
-    context = Context()
+    variables = list()
     for variable_name in ini.sections():
         _value = None
         kwargs = dict()
@@ -48,11 +48,9 @@ def load_variables(path):
 
             kwargs[key] = smart_cast(value)
 
-        context.add(variable_name, _value, **kwargs)
+        variables.append(Variable(variable_name, _value, **kwargs))
 
-    context.is_loaded = True
-
-    return context
+    return variables
 
 
 # Classes
@@ -98,6 +96,7 @@ class Context(object):
             d[name] = variable.value
 
         return d
+
 
 
 class Variable(object):
