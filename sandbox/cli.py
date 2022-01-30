@@ -121,8 +121,6 @@ This command is used to parse configuration files and output the commands.
         help="Load variables from a file."
     )
 
-
-
     # Access to the version number requires special consideration, especially
     # when using sub parsers. The Python 3.3 behavior is different. See this
     # answer: http://stackoverflow.com/questions/8521612/argparse-optional-subparser-for-version
@@ -215,6 +213,10 @@ This command is used to parse configuration files and output the commands.
     else:
         commands = list()
         for snippet in loader.get_snippets():
+            # Skip explanations and screenshots. They don't produce usable statements.
+            if snippet.name in ("explain", "screenshot"):
+                continue
+
             statement = snippet.get_statement()
             if statement is not None:
                 commands.append(statement)
