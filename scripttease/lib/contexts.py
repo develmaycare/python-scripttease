@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 # Exports
 
 __all__ = (
+    "load_variables",
     "Context",
     "Variable",
 )
@@ -84,6 +85,15 @@ class Context(object):
         self.variables[name] = v
 
         return v
+
+    def append(self, variable):
+        """Append a variable to the context.
+
+        :param variable: The variable to be added to the context.
+        :type variable: scripttease.lib.contexts.Variable
+
+        """
+        self.variables[variable.name] = variable
 
     def mapping(self):
         """Get the context as a dictionary.
