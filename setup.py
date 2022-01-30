@@ -32,6 +32,8 @@ setup(
         "jinja2",
         "pygments",
         "python-commonkit",
+        "pyyaml",
+        "tabulate",
     ],
     # dependency_links=[
     #     "https://github.com/develmaycare/superpython",
