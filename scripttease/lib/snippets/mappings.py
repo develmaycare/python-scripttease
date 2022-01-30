@@ -5,6 +5,7 @@ from .django import django
 from .messages import messages
 from .mysql import mysql
 from .pgsql import pgsql
+from .php import php
 from .posix import posix
 from .python import python
 from .ubuntu import ubuntu
@@ -56,6 +57,6 @@ def merge_dictionaries(first: dict, second: dict) -> dict:
 
 
 MAPPINGS = {
-    'centos': merge(centos, django, messages, mysql, pgsql, posix, python),
-    'ubuntu': merge(ubuntu, django, messages, mysql, pgsql, posix, python),
+    'centos': merge(centos, django, messages, mysql, pgsql, php, posix, python),
+    'ubuntu': merge(ubuntu, django, messages, mysql, pgsql, php, posix, python),
 }
