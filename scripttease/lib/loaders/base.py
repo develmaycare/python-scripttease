@@ -305,7 +305,7 @@ class Snippet(object):
         self.kwargs = kwargs or dict()
         self.name = name
 
-        sudo = self.kwargs.get("sudo", None)
+        sudo = self.kwargs.pop("sudo", None)
         if isinstance(sudo, Sudo):
             self.sudo = sudo
         elif type(sudo) is str:
@@ -503,17 +503,28 @@ class Sudo(object):
 class Template(object):
 
     PARSER_JINJA = "jinja2"
+    PARSER_PYTHON = "python"
     PARSER_SIMPLE = "simple"
 
     def __init__(self, source, target, backup=True, parser=PARSER_JINJA, **kwargs):
         self.backup_enabled = backup
         self.context = kwargs.pop("context", dict())
+        self.kwargs = kwargs
+
         self.parser = parser
         self.locations = kwargs.pop("locations", list())
         self.source = os.path.expanduser(source)
         self.target = target
 
-        self.kwargs = kwargs
+        sudo = self.kwargs.pop("sudo", None)
+        if isinstance(sudo, Sudo):
+            self.sudo = sudo
+        elif type(sudo) is str:
+            self.sudo = Sudo(enabled=True, user=sudo)
+        elif sudo is True:
+            self.sudo = Sudo(enabled=True)
+        else:
+            self.sudo = Sudo()
 
     def __getattr__(self, item):
         return self.kwargs.get(item)
@@ -537,6 +548,10 @@ class Template(object):
 
             return content
 
+        if self.parser == self.PARSER_PYTHON:
+            content = read_file(template)
+            return content % self.context
+
         try:
             return parse_jinja_template(template, self.context)
         except TemplateNotFound:
@@ -554,7 +569,8 @@ class Template(object):
 
         # TODO: Backing up a template's target is currently specific to bash.
         if self.backup_enabled:
-            lines.append('if [[ -f "%s" ]]; then mv %s %s.b; fi;' % (self.target, self.target, self.target))
+            command = "%s mv %s %s.b" % (self.sudo, self.target, self.target)
+            lines.append('if [[ -f "%s" ]]; then %s fi;' % (self.target, command.lstrip()))
 
         # Get the content; e.g. parse the template.
         content = self.get_content()
@@ -563,12 +579,15 @@ class Template(object):
         if content.startswith("#!"):
             _content = content.split("\n")
             first_line = _content.pop(0)
-            lines.append('echo "%s" > %s' % (first_line, self.target))
-            lines.append("cat >> %s << EOF" % self.target)
+            command = '%s echo "%s" > %s' % (self.sudo, first_line, self.target)
+            lines.append(command.lstrip())
+            command = "%s cat >> %s << EOF" % (self.sudo, self.target)
+            lines.append(command.lstrip())
             lines.append("\n".join(_content))
             lines.append("EOF")
         else:
-            lines.append("cat > %s << EOF" % self.target)
+            command = "%s cat >> %s << EOF" % (self.sudo, self.target)
+            lines.append(command.lstrip())
             lines.append(content)
             lines.append("EOF")
 
