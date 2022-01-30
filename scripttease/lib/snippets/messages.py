@@ -7,7 +7,7 @@ messages = {
         'clear;'
     ],
     'echo': 'echo "{{ args[0] }}"',
-    'explain': "{{ args[0] }}",
+    'explain': "{{ args[0] }} ",
     'screenshot': [
         '{% if output == "md" %}',
         "![{% if caption %}{{ caption }}]({{ args[0] }})",
