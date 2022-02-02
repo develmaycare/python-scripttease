@@ -1,57 +1,15 @@
 # Imports
 
-from commonkit import smart_cast
-from configparser import ParsingError, RawConfigParser
 import logging
-import os
 
 log = logging.getLogger(__name__)
 
 # Exports
 
 __all__ = (
-    "load_variables",
     "Context",
     "Variable",
 )
-
-# Functions
-
-
-def load_variables(path):
-    """Load variables from an INI file.
-
-    :param path: The path to the INI file.
-    :type path: str
-
-    :rtype: list[scripttease.lib.contexts.Variable]
-
-    """
-    if not os.path.exists(path):
-        log.warning("Variables file does not exist: %s" % path)
-        return list()
-
-    ini = RawConfigParser()
-    try:
-        ini.read(path)
-    except ParsingError as e:
-        log.warning("Failed to parse %s variables file: %s" % (path, str(e)))
-        return list()
-
-    variables = list()
-    for variable_name in ini.sections():
-        _value = None
-        kwargs = dict()
-        for key, value in ini.items(variable_name):
-            if key == "value":
-                _value = smart_cast(value)
-                continue
-
-            kwargs[key] = smart_cast(value)
-
-        variables.append(Variable(variable_name, _value, **kwargs))
-
-    return variables
 
 
 # Classes
@@ -108,11 +66,10 @@ class Context(object):
         return d
 
 
-
 class Variable(object):
     """An individual variable."""
 
-    def __init__(self, name, value, **kwargs):
+    def __init__(self, name, value, environment=None, **kwargs):
         """Initialize a variable.
 
         :param name: The name of the variable.
@@ -120,12 +77,17 @@ class Variable(object):
 
         :param value: The value of the variable.
 
+        :param environment: The environment in which the variable is used.
+        :type environment: str
+
         kwargs are available as dynamic attributes.
 
         """
-        self.attributes = kwargs
+        self.environment = environment
         self.name = name
         self.value = value
+
+        self.attributes = kwargs
 
     def __getattr__(self, item):
         return self.attributes.get(item)

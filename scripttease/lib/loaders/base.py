@@ -1,21 +1,111 @@
 # Imports
 
-from commonkit import parse_jinja_string, parse_jinja_template, pick, read_file, smart_cast, split_csv, File
+from commonkit import any_list_item, parse_jinja_string, parse_jinja_template, pick, read_file, smart_cast, split_csv, \
+    File
+from configparser import ParsingError, RawConfigParser
 from jinja2.exceptions import TemplateError, TemplateNotFound
 import logging
 import os
+from ..contexts import Variable
 from ..snippets.mappings import MAPPINGS
 
 log = logging.getLogger(__name__)
 
 # Exports
 
+
 __all__ = (
+    "filter_snippets",
+    "load_variables",
     "BaseLoader",
     "Snippet",
     "Sudo",
     "Template",
 )
+# Functions
+
+
+def filter_snippets(snippets, environments=None, tags=None):
+    """Filter snippets based on the given criteria.
+
+    :param snippets: The snippets to be filtered.
+    :type snippets: list[scripttease.lib.loaders.base.Snippet]
+
+    :param environments: Environment names to be matched.
+    :type environments: list[str]
+
+    :param tags: Tag names to be matched.
+    :type tags: list[str]
+
+    """
+    filtered = list()
+    for snippet in snippets:
+        if environments is not None and len(snippet.environments) > 0:
+            if not any_list_item(environments, snippet.environments):
+                continue
+
+        if tags is not None:
+            if not any_list_item(tags, snippet.tags):
+                continue
+
+        filtered.append(snippet)
+
+    return filtered
+
+
+def load_variables(path, env=None):
+    """Load variables from an INI file.
+
+    :param path: The path to the INI file.
+    :type path: str
+
+    :param env: The environment name of variables to return.
+    :type env: str
+
+    :rtype: list[scripttease.lib.contexts.Variable]
+
+    """
+    if not os.path.exists(path):
+        log.warning("Variables file does not exist: %s" % path)
+        return list()
+
+    ini = RawConfigParser()
+    try:
+        ini.read(path)
+    except ParsingError as e:
+        log.warning("Failed to parse %s variables file: %s" % (path, str(e)))
+        return list()
+
+    variables = list()
+    for variable_name in ini.sections():
+        if ":" in variable_name:
+            variable_name, _environment = variable_name.split(":")
+        else:
+            _environment = None
+            variable_name = variable_name
+
+        kwargs = {
+            'environment': _environment,
+        }
+        _value = None
+        for key, value in ini.items(variable_name):
+            if key == "value":
+                _value = smart_cast(value)
+                continue
+
+            kwargs[key] = smart_cast(value)
+
+        variables.append(Variable(variable_name, _value, **kwargs))
+
+    if env is not None:
+        filtered_variables = list()
+        for var in variables:
+            if var.environment and var.environment == env or var.environment is None:
+                filtered_variables.append(var)
+
+        return filtered_variables
+
+    return variables
 
 
 # Classes
@@ -305,6 +395,9 @@ class Snippet(object):
         self.kwargs = kwargs or dict()
         self.name = name
 
+        self.environments = kwargs.pop("environments", list())
+        self.tags = kwargs.pop("tags", list())
+
         sudo = self.kwargs.pop("sudo", None)
         if isinstance(sudo, Sudo):
             self.sudo = sudo
@@ -509,14 +602,14 @@ class Template(object):
     def __init__(self, source, target, backup=True, parser=PARSER_JINJA, **kwargs):
         self.backup_enabled = backup
         self.context = kwargs.pop("context", dict())
-        self.kwargs = kwargs
-
+        self.name = "template"
         self.parser = parser
+        self.language = kwargs.pop("lang", None)
         self.locations = kwargs.pop("locations", list())
         self.source = os.path.expanduser(source)
         self.target = target
 
-        sudo = self.kwargs.pop("sudo", None)
+        sudo = kwargs.pop("sudo", None)
         if isinstance(sudo, Sudo):
             self.sudo = sudo
         elif type(sudo) is str:
@@ -525,6 +618,8 @@ class Template(object):
             self.sudo = Sudo(enabled=True)
         else:
             self.sudo = Sudo()
+
+        self.kwargs = kwargs
 
     def __getattr__(self, item):
         return self.kwargs.get(item)
@@ -602,6 +697,25 @@ class Template(object):
             pass
 
         return "\n".join(lines)
+
+    def get_target_language(self):
+        if self.language is not None:
+            return self.language
+
+        if self.target.endswith(".conf"):
+            return "conf"
+        elif self.target.endswith(".ini"):
+            return "ini"
+        elif self.target.endswith(".php"):
+            return "php"
+        elif self.target.endswith(".py"):
+            return "python"
+        elif self.target.endswith(".sh"):
+            return "bash"
+        elif self.target.endswith(".yml"):
+            return "yaml"
+        else:
+            return "text"
 
     def get_template(self):
         """Get the template path.

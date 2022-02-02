@@ -1,17 +1,17 @@
 #! /usr/bin/env python
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from commonkit import highlight_code, smart_cast
+from commonkit import highlight_code, indent, smart_cast
 from commonkit.logging import LoggingHelper
 from commonkit.shell import EXIT
+from markdown import markdown
 import sys
 
 sys.path.insert(0, "../")
 
 from scripttease.constants import LOGGER_NAME
-from scripttease.lib.contexts import load_variables, Context
-from scripttease.lib.loaders.ini import INILoader
-from scripttease.lib.loaders.yaml import YMLLoader
+from scripttease.lib.contexts import Context
+from scripttease.lib.loaders import load_variables, INILoader, YMLLoader
 from scripttease.version import DATE as VERSION_DATE, VERSION
 
 DEBUG = 10
@@ -59,10 +59,11 @@ This command is used to parse configuration files and output the commands.
     )
 
     parser.add_argument(
-        "-d",
-        "--docs",
-        action="store_true",
-        dest="docs_enabled",
+        "-d=",
+        "--docs=",
+        choices=["html", "markdown", "plain", "rst"],
+        # default="markdown",
+        dest="docs",
         help="Output documentation instead of code."
     )
 
@@ -172,7 +173,7 @@ This command is used to parse configuration files and output the commands.
 
             filters[key].append(value)
 
-    # Handle options.
+    # Handle global command options.
     options = dict()
     if args.options:
         for token in args.options:
@@ -208,8 +209,96 @@ This command is used to parse configuration files and output the commands.
         exit(EXIT.ERROR)
 
     # Generate output.
-    if args.docs_enabled:
-        pass
+    if args.docs:
+        output = list()
+        for snippet in loader.get_snippets():
+            if snippet is None:
+                continue
+
+            if snippet.name == "explain":
+                output.append(snippet.args[0])
+                output.append("")
+            elif snippet.name == "screenshot":
+                if args.docs == "html":
+                    b = list()
+                    b.append('<img src="%s"' % snippet.args[0])
+
+                    if snippet.caption:
+                        b.append('alt="%s"' % snippet.caption)
+
+                    if snippet.classes:
+                        b.append('class="%s"' % snippet.classes)
+
+                    if snippet.height:
+                        b.append('height="%s"' % snippet.height)
+
+                    if snippet.width:
+                        b.append('width="%s"' % snippet)
+
+                    output.append(" ".join(b) + ">")
+                elif args.docs == "plain":
+                    output.append(snippet.args[0])
+                    output.append("")
+                elif args.docs == "rst":
+                    output.append(".. figure:: %s" % snippet.args[0])
+
+                    if snippet.caption:
+                        output.append(indent(":alt: %s" % snippet.caption))
+
+                    if snippet.height:
+                        output.append(indent(":height: %s" % snippet.height))
+
+                    if snippet.width:
+                        output.append(indent(":width: %s" % snippet.width))
+
+                    output.append("")
+                else:
+                    if snippet.caption:
+                        output.append("![%s](%s)" % (snippet.caption, snippet.args[0]))
+                    else:
+                        output.append("![](%s)" % (snippet.args[0]))
+
+                    output.append("")
+            elif snippet.name == "template":
+                if args.docs == "plain":
+                    output.append("+++")
+                    output.append(snippet.get_content())
+                    output.append("+++")
+                elif args.docs == "rst":
+                    output.append(".. code-block:: %s" % snippet.get_target_language())
+                    output.append("")
+                    output.append(indent(snippet.get_content()))
+                    output.append("")
+                else:
+                    output.append("```%s" % snippet.get_target_language())
+                    output.append(snippet.get_content())
+                    output.append("```")
+            else:
+                statement = snippet.get_statement(include_comment=False, include_register=False, include_stop=False)
+                if statement is not None:
+                    line = snippet.comment.replace("#", "")
+                    output.append("%s:" % line.capitalize())
+                    output.append("")
+                    if args.docs == "plain":
+                        output.append("---")
+                        output.append(statement)
+                        output.append("---")
+                        output.append("")
+                    elif args.docs == "rst":
+                        output.append(".. code-block:: bash")
+                        output.append("")
+                        output.append(indent(statement))
+                        output.append("")
+                    else:
+                        output.append("```bash")
+                        output.append(statement)
+                        output.append("```")
+                        output.append("")
+
+        if args.docs == "html":
+            print(markdown("\n".join(output), extensions=['fenced_code']))
+        else:
+            print("\n".join(output))
     else:
         commands = list()
         for snippet in loader.get_snippets():
