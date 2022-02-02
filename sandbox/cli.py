@@ -216,6 +216,10 @@ This command is used to parse configuration files and output the commands.
                 continue
 
             if snippet.name == "explain":
+                if snippet.header:
+                    output.append("## %s" % snippet.name.title())
+                    output.append("")
+
                 output.append(snippet.args[0])
                 output.append("")
             elif snippet.name == "screenshot":
