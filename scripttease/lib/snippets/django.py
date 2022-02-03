@@ -1,20 +1,10 @@
 from commonkit import parse_jinja_string
+from ...constants import EXCLUDED_KWARGS
 
-DJANGO_EXCLUDED_KWARGS = [
-    "cd",
-    "comment",
-    "environments",
-    "prefix",
-    "register",
-    "shell",
-    "stop",
-    "tags",
-    # "venv", # ?
-]
 
 def django_command_parser(snippet, args=None, excluded_kwargs=None):
 
-    _excluded_kwargs = excluded_kwargs or DJANGO_EXCLUDED_KWARGS
+    _excluded_kwargs = excluded_kwargs or EXCLUDED_KWARGS
 
     # We need to remove the common options so any remaining keyword arguments are converted to switches for the
     # management command.

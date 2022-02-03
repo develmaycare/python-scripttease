@@ -6,6 +6,7 @@ from configparser import ParsingError, RawConfigParser
 from jinja2.exceptions import TemplateError, TemplateNotFound
 import logging
 import os
+from ...constants import EXCLUDED_KWARGS
 from ..contexts import Variable
 from ..snippets.mappings import MAPPINGS
 
@@ -114,7 +115,8 @@ def load_variables(path, env=None):
 class BaseLoader(File):
     """Base class for loading a command file."""
 
-    def __init__(self, path,  context=None, locations=None, mappings=None, profile="ubuntu", **kwargs):
+    def __init__(self, path,  context=None, excluded_kwargs=None, locations=None, mappings=None, profile="ubuntu",
+                 **kwargs):
         """Initialize the loader.
 
         :param path: The path to the command file.
@@ -123,6 +125,13 @@ class BaseLoader(File):
         :param context: Global context that may be used when to parse the command file, snippets, and templates. This is
                         converted to a ``dict`` when passed to a Snippet or Template.
         :type context: scripttease.lib.contexts.Context
+
+        :param excluded_kwargs: For commands that support ad hoc sub-commands (like Django), this is a list of keyword
+                                argument names that must be removed. Defaults to the names of common command attributes.
+                                If your implementation requires custom but otherwise standard command attributes, you'll
+                                need to import the ``EXCLUDED_KWARGS`` constant and add your attribute names before
+                                passing it to the loader.
+        :type excluded_kwargs: list[str]
 
         :param locations: A list of paths where templates and other external files may be found. The ``templates/``
                           directory in which the command file exists is added automatically.
@@ -140,6 +149,7 @@ class BaseLoader(File):
 
         """
         self.context = context
+        self.excluded_kwargs = excluded_kwargs or EXCLUDED_KWARGS
         self.is_loaded = False
         self.locations = locations or list()
         self.mappings = mappings or MAPPINGS
@@ -365,7 +375,7 @@ class Snippet(object):
 
     """
 
-    def __init__(self, name, args=None, content=None, context=None, kwargs=None, parser=None):
+    def __init__(self, name, args=None, content=None, context=None, excluded_kwargs=None, kwargs=None, parser=None):
         """Initialize a snippet.
 
         :param name: The canonical name of the snippet.
@@ -380,6 +390,9 @@ class Snippet(object):
         :param context: Additional context variables used to render the command.
         :type context: dict
 
+        :param excluded_kwargs: See parameter description for BaseLoader.
+        :type excluded_kwargs: list[str]
+
         :param kwargs: The keyword arguments found in the config file. These may be specific to the command or one of
                        the common options. They are accessible as dynamic attributes of the Snippet instance.
         :type kwargs: dict
@@ -389,6 +402,7 @@ class Snippet(object):
 
         """
         self.args = args or list()
+        self.excluded_kwargs = excluded_kwargs or EXCLUDED_KWARGS
         self.parser = parser
         self.content = content
         self.context = context or dict()
@@ -453,7 +467,7 @@ class Snippet(object):
                     args.append(arg.replace("$item", item))
 
                 if self.parser:
-                    statement = self.parser(self, args=args)
+                    statement = self.parser(self, args=args, excluded_kwargs=self.excluded_kwargs)
                 else:
                     statement = self._parse(args=args)
 
@@ -485,7 +499,7 @@ class Snippet(object):
             a.append("%s &&" % self.prefix)
 
         if self.parser:
-            statement = self.parser(self)
+            statement = self.parser(self, excluded_kwargs=self.excluded_kwargs)
         else:
             statement = self._parse()
 

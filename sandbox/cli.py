@@ -226,9 +226,7 @@ This command is used to parse configuration files and output the commands.
                 if args.docs == "html":
                     b = list()
                     b.append('<img src="%s"' % snippet.args[0])
-
-                    if snippet.caption:
-                        b.append('alt="%s"' % snippet.caption)
+                    b.append('alt="%s"' % snippet.caption or snippet.comment)
 
                     if snippet.classes:
                         b.append('class="%s"' % snippet.classes)
@@ -240,6 +238,7 @@ This command is used to parse configuration files and output the commands.
                         b.append('width="%s"' % snippet)
 
                     output.append(" ".join(b) + ">")
+                    output.append("")
                 elif args.docs == "plain":
                     output.append(snippet.args[0])
                     output.append("")
@@ -247,7 +246,7 @@ This command is used to parse configuration files and output the commands.
                     output.append(".. figure:: %s" % snippet.args[0])
 
                     if snippet.caption:
-                        output.append(indent(":alt: %s" % snippet.caption))
+                        output.append(indent(":alt: %s" % snippet.caption or snippet.comment))
 
                     if snippet.height:
                         output.append(indent(":height: %s" % snippet.height))
@@ -257,11 +256,7 @@ This command is used to parse configuration files and output the commands.
 
                     output.append("")
                 else:
-                    if snippet.caption:
-                        output.append("![%s](%s)" % (snippet.caption, snippet.args[0]))
-                    else:
-                        output.append("![](%s)" % (snippet.args[0]))
-
+                    output.append("![%s](%s)" % (snippet.caption or snippet.comment, snippet.args[0]))
                     output.append("")
             elif snippet.name == "template":
                 if args.docs == "plain":
@@ -306,8 +301,10 @@ This command is used to parse configuration files and output the commands.
     else:
         commands = list()
         for snippet in loader.get_snippets():
-            # Skip explanations and screenshots. They don't produce usable statements.
+            # Explanations and screenshots don't produce usable statements but may be added as comments.
             if snippet.name in ("explain", "screenshot"):
+                commands.append("# %s" % snippet.args[0])
+                commands.append("")
                 continue
 
             statement = snippet.get_statement()
