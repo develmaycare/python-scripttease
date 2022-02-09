@@ -57,7 +57,7 @@ pgsql = {
             '--host={{ host|default("localhost") }}',
             '--port={{ port|default("5432") }}',
             "--column-inserts",
-            '--file={{ file_name|default("dump.sql") }}',
+            '--file={{ path|default("dump.sql") }}',
             "{{ args[0] }}"
         ],
         'exec': [

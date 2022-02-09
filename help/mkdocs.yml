@@ -1,0 +1,26 @@
+site_name: Script Tease
+copyright: Copyright &copy; Pleasant Tents, LLC. All rights reserved.
+markdown_extensions:
+  - toc:
+      permalink: True
+  - admonition
+  - attr_list
+  - def_list
+nav:
+  - Home: index.md
+  - Configuration:
+      - Command File: config/command-file.md
+      - Variables: config/variables.md
+  - Commands:
+      - Django: commands/django.md
+      - Messages: commands/messages.md
+      - MySQL: commands/mysql.md
+      - PHP: commands/php.md
+      - Postgres: commands/pgsql.md
+      - POSIX: commands/posix.md
+      - Python: commands/python.md
+  - Profiles:
+      - Ubuntu: profiles/ubuntu.md
+#  - Developer Reference: /developers/
+repo_name: GitLab
+repo_url: https://git.sixgunsoftware.com/python-scripttease
