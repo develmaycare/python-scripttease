@@ -83,6 +83,13 @@ This command is used to parse configuration files and output the commands.
     )
 
     parser.add_argument(
+        "-i=",
+        "--inventory=",
+        dest="inventory",
+        help="Copy an inventory item to a local directory."
+    )
+
+    parser.add_argument(
         "-o=",
         "--option=",
         action="append",
