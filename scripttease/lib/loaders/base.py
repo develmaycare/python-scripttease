@@ -211,6 +211,12 @@ class BaseLoader(File):
             context.update(self.get_context())
             return Template(source, target, context=context, **kwargs)
 
+        # Explanations have had the content split into lots of arg strings. We just need to reconstitute this as the
+        # snippet's content.
+        if name == "explain":
+            content = " ".join(list(args))
+            return Snippet("explain", content=content, kwargs=kwargs)
+
         # Convert args to a list so we can update it below.
         _args = list(args)
 
@@ -578,7 +584,14 @@ class Snippet(object):
 
             return " ".join(a)
 
+        # try:
+        #     return parse_jinja_string(self.content, context)
+        # except TypeError as e:
+        #     log.error("Failed to build command statement for %s: %s" % (self.name, e))
+        #     return None
+
         return parse_jinja_string(self.content, context)
+
 
 
 class Sudo(object):
@@ -679,7 +692,7 @@ class Template(object):
         # TODO: Backing up a template's target is currently specific to bash.
         if self.backup_enabled:
             command = "%s mv %s %s.b" % (self.sudo, self.target, self.target)
-            lines.append('if [[ -f "%s" ]]; then %s fi;' % (self.target, command.lstrip()))
+            lines.append('if [[ -f "%s" ]]; then %s; fi;' % (self.target, command.lstrip()))
 
         # Get the content; e.g. parse the template.
         content = self.get_content()
@@ -690,12 +703,12 @@ class Template(object):
             first_line = _content.pop(0)
             command = '%s echo "%s" > %s' % (self.sudo, first_line, self.target)
             lines.append(command.lstrip())
-            command = "%s cat >> %s << EOF" % (self.sudo, self.target)
+            command = "%s cat > %s << EOF" % (self.sudo, self.target)
             lines.append(command.lstrip())
             lines.append("\n".join(_content))
             lines.append("EOF")
         else:
-            command = "%s cat >> %s << EOF" % (self.sudo, self.target)
+            command = "%s cat > %s << EOF" % (self.sudo, self.target)
             lines.append(command.lstrip())
             lines.append(content)
             lines.append("EOF")

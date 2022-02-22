@@ -26,6 +26,7 @@ class INILoader(BaseLoader):
 
         """
         if not self.exists:
+            log.warning("Input file does not exist: %s" % self.path)
             return False
 
         if self.context is not None:
@@ -58,6 +59,11 @@ class INILoader(BaseLoader):
                 # The first key/value pair is the command name and arguments.
                 if count == 0:
                     command_name = key
+
+                    # Explanations aren't processed like commands, so the text need not be surrounded by double quotes.
+                    # if command_name == "explain":
+                    #     args.append(value)
+                    #     continue
 
                     # Arguments surrounded by quotes are considered to be one argument. All others are split into a
                     # list to be passed to the callback. It is also possible that this is a call where no arguments are

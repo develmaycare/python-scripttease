@@ -29,7 +29,9 @@ setup(
     packages=find_packages(exclude=["tests", "tests.*"]),
     include_package_data=True,
     install_requires=[
+        "colorama",
         "jinja2",
+        "Markdown",
         "pygments",
         "python-commonkit",
         "pyyaml",

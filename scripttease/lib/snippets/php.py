@@ -1,3 +1,5 @@
 php = {
-    'module': "phpenmod {{ args[0] }}",
+    'php': {
+        'module': "phpenmod {{ args[0] }}",
+    },
 }

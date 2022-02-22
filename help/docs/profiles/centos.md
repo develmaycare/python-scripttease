@@ -16,7 +16,7 @@ Work with Apache.
 - `apache.restart`
 - `apache.start`
 - `apache.stop`
-- `apache.test`
+- `apache.test` 
 
 ### install
 

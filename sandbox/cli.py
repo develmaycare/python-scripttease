@@ -1,10 +1,11 @@
 #! /usr/bin/env python
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from commonkit import highlight_code, indent, smart_cast
+from commonkit import highlight_code, indent, smart_cast, write_file
 from commonkit.logging import LoggingHelper
 from commonkit.shell import EXIT
 from markdown import markdown
+import os
 import sys
 
 sys.path.insert(0, "../")
@@ -12,6 +13,7 @@ sys.path.insert(0, "../")
 from scripttease.constants import LOGGER_NAME
 from scripttease.lib.contexts import Context
 from scripttease.lib.loaders import load_variables, INILoader, YMLLoader
+from scripttease.variables import PATH_TO_SCRIPT_TEASE
 from scripttease.version import DATE as VERSION_DATE, VERSION
 
 DEBUG = 10
@@ -183,44 +185,82 @@ This command is used to parse configuration files and output the commands.
             except ValueError:
                 options[token] = True
 
+    # The path may have been given as a file name (steps.ini), path, or an inventory name.
+    input_locations = [
+        args.path,
+        os.path.join(PATH_TO_SCRIPT_TEASE, "data", "inventory", args.path, "steps.ini"),
+        os.path.join(PATH_TO_SCRIPT_TEASE, "data", "inventory", args.path, "steps.yml"),
+    ]
+    path = None
+    for location in input_locations:
+        if os.path.exists(location):
+            path = location
+            break
+
+    if path is None:
+        log.warning("Path does not exist: %s" % args.path)
+        exit(EXIT.INPUT)
+
     # Load the commands.
-    if args.path.endswith(".ini"):
+    if path.endswith(".ini"):
         loader = INILoader(
-            args.path,
+            path,
             context=context,
             locations=args.template_locations,
             profile=args.profile,
             **options
         )
-    elif args.path.endswith(".yml"):
+    elif path.endswith(".yml"):
         loader = YMLLoader(
-            args.path,
+            path,
             context=context,
             locations=args.template_locations,
             profile=args.profile,
             **options
         )
     else:
-        log.error("Unsupported file format: %s" % args.path)
+        log.error("Unsupported file format: %s" % path)
         exit(EXIT.ERROR)
 
     # noinspection PyUnboundLocalVariable
     if not loader.load():
+        log.error("Failed to load the input file: %s" % path)
+        exit(EXIT.ERROR)
+
+    # Validate snippets before continuing.
+    valid = list()
+    for snippet in loader.get_snippets():
+        if snippet.is_valid:
+            valid.append(True)
+        else:
+            log.error("Invalid snippet: %s" % snippet.name)
+            valid.append(False)
+
+    if not all(valid):
         exit(EXIT.ERROR)
 
     # Generate output.
     if args.docs:
         output = list()
         for snippet in loader.get_snippets():
-            if snippet is None:
-                continue
+
+            # Will this every happen?
+            # if snippet is None:
+            #     continue
 
             if snippet.name == "explain":
                 if snippet.header:
-                    output.append("## %s" % snippet.name.title())
+                    if args.docs == "plain":
+                        output.append("***** %s *****" % snippet.name.title())
+                    elif args.docs == "rst":
+                        output.append(snippet.name.title())
+                        output.append("=" * len(snippet.name))
+                    else:
+                        output.append("## %s" % snippet.name.title())
+
                     output.append("")
 
-                output.append(snippet.args[0])
+                output.append(snippet.content)
                 output.append("")
             elif snippet.name == "screenshot":
                 if args.docs == "html":
@@ -272,6 +312,7 @@ This command is used to parse configuration files and output the commands.
                     output.append("```%s" % snippet.get_target_language())
                     output.append(snippet.get_content())
                     output.append("```")
+                    output.append("")
             else:
                 statement = snippet.get_statement(include_comment=False, include_register=False, include_stop=False)
                 if statement is not None:
@@ -295,16 +336,21 @@ This command is used to parse configuration files and output the commands.
                         output.append("")
 
         if args.docs == "html":
-            print(markdown("\n".join(output), extensions=['fenced_code']))
+            _output = markdown("\n".join(output), extensions=['fenced_code'])
         else:
-            print("\n".join(output))
+            _output = "\n".join(output)
+
+        print(_output)
+
+        if args.output_file:
+            write_file(args.output_file, _output)
     else:
         commands = list()
         for snippet in loader.get_snippets():
             # Explanations and screenshots don't produce usable statements but may be added as comments.
             if snippet.name in ("explain", "screenshot"):
-                commands.append("# %s" % snippet.args[0])
-                commands.append("")
+                # commands.append("# %s" % snippet.content)
+                # commands.append("")
                 continue
 
             statement = snippet.get_statement()
@@ -316,6 +362,9 @@ This command is used to parse configuration files and output the commands.
             print(highlight_code("\n".join(commands), language="bash"))
         else:
             print("\n".join(commands))
+
+        if args.output_file:
+            write_file(args.output_file, "\n".join(commands))
 
     exit(EXIT.OK)
 
