@@ -1,9 +1,9 @@
 ubuntu = {
     'apache': {
-        'disable': '{% if args[0].startswith("mod_") %}a2dismod{% else %}a2dissite{% endif %} {{ args[0] }}',
-        'disable_module': "a2dissite {{ args[0] }}",
-        'disable_site': "a2dismod {{ args[0] }}",
-        'enable': '{% if args[0].startswith("mod_") %}a2enmod{% else %}a2ensite{% endif %} {{ args[0] }}',
+        # 'disable': '{% if args[0].startswith("mod_") %}a2dismod{% else %}a2dissite{% endif %} {{ args[0] }}',
+        'disable_module': "a2dismod {{ args[0] }}",
+        'disable_site': "a2dissite {{ args[0] }}",
+        # 'enable': '{% if args[0].startswith("mod_") %}a2enmod{% else %}a2ensite{% endif %} {{ args[0] }}',
         'enable_module': "a2enmod {{ args[0] }}",
         'enable_site': "a2ensite {{ args[0] }}",
         'reload': "service apache2 reload",

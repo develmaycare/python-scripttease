@@ -7,6 +7,8 @@ messages = {
         'clear;'
     ],
     'echo': 'echo "{{ args[0] }}"',
+    'explain': None,
+    'screenshot': None,
     'slack': [
         "curl -X POST -H 'Content-type: application/json' --data",
         '{"text": "{{ args[0] }}"}',

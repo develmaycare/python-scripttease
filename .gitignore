@@ -12,6 +12,7 @@ _scraps
 build
 dist
 docs/build
+help/site
 htmlcov
 tmp.*
 tmp

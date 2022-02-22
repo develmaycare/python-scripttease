@@ -1,21 +1,112 @@
 # Imports
 
-from commonkit import parse_jinja_string, parse_jinja_template, pick, read_file, smart_cast, split_csv, File
+from commonkit import any_list_item, parse_jinja_string, parse_jinja_template, pick, read_file, smart_cast, split_csv, \
+    File
+from configparser import ParsingError, RawConfigParser
 from jinja2.exceptions import TemplateError, TemplateNotFound
 import logging
 import os
+from ...constants import EXCLUDED_KWARGS
+from ..contexts import Variable
 from ..snippets.mappings import MAPPINGS
 
 log = logging.getLogger(__name__)
 
 # Exports
 
+
 __all__ = (
+    "filter_snippets",
+    "load_variables",
     "BaseLoader",
     "Snippet",
     "Sudo",
     "Template",
 )
+# Functions
+
+
+def filter_snippets(snippets, environments=None, tags=None):
+    """Filter snippets based on the given criteria.
+
+    :param snippets: The snippets to be filtered.
+    :type snippets: list[scripttease.lib.loaders.base.Snippet]
+
+    :param environments: Environment names to be matched.
+    :type environments: list[str]
+
+    :param tags: Tag names to be matched.
+    :type tags: list[str]
+
+    """
+    filtered = list()
+    for snippet in snippets:
+        if environments is not None and len(snippet.environments) > 0:
+            if not any_list_item(environments, snippet.environments):
+                continue
+
+        if tags is not None:
+            if not any_list_item(tags, snippet.tags):
+                continue
+
+        filtered.append(snippet)
+
+    return filtered
+
+
+def load_variables(path, env=None):
+    """Load variables from an INI file.
+
+    :param path: The path to the INI file.
+    :type path: str
+
+    :param env: The environment name of variables to return.
+    :type env: str
+
+    :rtype: list[scripttease.lib.contexts.Variable]
+
+    """
+    if not os.path.exists(path):
+        log.warning("Variables file does not exist: %s" % path)
+        return list()
+
+    ini = RawConfigParser()
+    try:
+        ini.read(path)
+    except ParsingError as e:
+        log.warning("Failed to parse %s variables file: %s" % (path, str(e)))
+        return list()
+
+    variables = list()
+    for variable_name in ini.sections():
+        if ":" in variable_name:
+            variable_name, _environment = variable_name.split(":")
+        else:
+            _environment = None
+            variable_name = variable_name
+
+        kwargs = {
+            'environment': _environment,
+        }
+        _value = None
+        for key, value in ini.items(variable_name):
+            if key == "value":
+                _value = smart_cast(value)
+                continue
+
+            kwargs[key] = smart_cast(value)
+
+        variables.append(Variable(variable_name, _value, **kwargs))
+
+    if env is not None:
+        filtered_variables = list()
+        for var in variables:
+            if var.environment and var.environment == env or var.environment is None:
+                filtered_variables.append(var)
+
+        return filtered_variables
+
+    return variables
 
 
 # Classes
@@ -24,7 +115,8 @@ __all__ = (
 class BaseLoader(File):
     """Base class for loading a command file."""
 
-    def __init__(self, path,  context=None, locations=None, mappings=None, profile="ubuntu", **kwargs):
+    def __init__(self, path,  context=None, excluded_kwargs=None, locations=None, mappings=None, profile="ubuntu",
+                 **kwargs):
         """Initialize the loader.
 
         :param path: The path to the command file.
@@ -33,6 +125,13 @@ class BaseLoader(File):
         :param context: Global context that may be used when to parse the command file, snippets, and templates. This is
                         converted to a ``dict`` when passed to a Snippet or Template.
         :type context: scripttease.lib.contexts.Context
+
+        :param excluded_kwargs: For commands that support ad hoc sub-commands (like Django), this is a list of keyword
+                                argument names that must be removed. Defaults to the names of common command attributes.
+                                If your implementation requires custom but otherwise standard command attributes, you'll
+                                need to import the ``EXCLUDED_KWARGS`` constant and add your attribute names before
+                                passing it to the loader.
+        :type excluded_kwargs: list[str]
 
         :param locations: A list of paths where templates and other external files may be found. The ``templates/``
                           directory in which the command file exists is added automatically.
@@ -50,6 +149,7 @@ class BaseLoader(File):
 
         """
         self.context = context
+        self.excluded_kwargs = excluded_kwargs or EXCLUDED_KWARGS
         self.is_loaded = False
         self.locations = locations or list()
         self.mappings = mappings or MAPPINGS
@@ -275,7 +375,7 @@ class Snippet(object):
 
     """
 
-    def __init__(self, name, args=None, content=None, context=None, kwargs=None, parser=None):
+    def __init__(self, name, args=None, content=None, context=None, excluded_kwargs=None, kwargs=None, parser=None):
         """Initialize a snippet.
 
         :param name: The canonical name of the snippet.
@@ -290,6 +390,9 @@ class Snippet(object):
         :param context: Additional context variables used to render the command.
         :type context: dict
 
+        :param excluded_kwargs: See parameter description for BaseLoader.
+        :type excluded_kwargs: list[str]
+
         :param kwargs: The keyword arguments found in the config file. These may be specific to the command or one of
                        the common options. They are accessible as dynamic attributes of the Snippet instance.
         :type kwargs: dict
@@ -299,13 +402,17 @@ class Snippet(object):
 
         """
         self.args = args or list()
+        self.excluded_kwargs = excluded_kwargs or EXCLUDED_KWARGS
         self.parser = parser
         self.content = content
         self.context = context or dict()
         self.kwargs = kwargs or dict()
         self.name = name
 
-        sudo = self.kwargs.get("sudo", None)
+        self.environments = kwargs.pop("environments", list())
+        self.tags = kwargs.pop("tags", list())
+
+        sudo = self.kwargs.pop("sudo", None)
         if isinstance(sudo, Sudo):
             self.sudo = sudo
         elif type(sudo) is str:
@@ -360,7 +467,7 @@ class Snippet(object):
                     args.append(arg.replace("$item", item))
 
                 if self.parser:
-                    statement = self.parser(self, args=args)
+                    statement = self.parser(self, args=args, excluded_kwargs=self.excluded_kwargs)
                 else:
                     statement = self._parse(args=args)
 
@@ -392,7 +499,7 @@ class Snippet(object):
             a.append("%s &&" % self.prefix)
 
         if self.parser:
-            statement = self.parser(self)
+            statement = self.parser(self, excluded_kwargs=self.excluded_kwargs)
         else:
             statement = self._parse()
 
@@ -503,15 +610,28 @@ class Sudo(object):
 class Template(object):
 
     PARSER_JINJA = "jinja2"
+    PARSER_PYTHON = "python"
     PARSER_SIMPLE = "simple"
 
     def __init__(self, source, target, backup=True, parser=PARSER_JINJA, **kwargs):
         self.backup_enabled = backup
         self.context = kwargs.pop("context", dict())
+        self.name = "template"
         self.parser = parser
+        self.language = kwargs.pop("lang", None)
         self.locations = kwargs.pop("locations", list())
         self.source = os.path.expanduser(source)
         self.target = target
+
+        sudo = kwargs.pop("sudo", None)
+        if isinstance(sudo, Sudo):
+            self.sudo = sudo
+        elif type(sudo) is str:
+            self.sudo = Sudo(enabled=True, user=sudo)
+        elif sudo is True:
+            self.sudo = Sudo(enabled=True)
+        else:
+            self.sudo = Sudo()
 
         self.kwargs = kwargs
 
@@ -537,6 +657,10 @@ class Template(object):
 
             return content
 
+        if self.parser == self.PARSER_PYTHON:
+            content = read_file(template)
+            return content % self.context
+
         try:
             return parse_jinja_template(template, self.context)
         except TemplateNotFound:
@@ -554,7 +678,8 @@ class Template(object):
 
         # TODO: Backing up a template's target is currently specific to bash.
         if self.backup_enabled:
-            lines.append('if [[ -f "%s" ]]; then mv %s %s.b; fi;' % (self.target, self.target, self.target))
+            command = "%s mv %s %s.b" % (self.sudo, self.target, self.target)
+            lines.append('if [[ -f "%s" ]]; then %s fi;' % (self.target, command.lstrip()))
 
         # Get the content; e.g. parse the template.
         content = self.get_content()
@@ -563,12 +688,15 @@ class Template(object):
         if content.startswith("#!"):
             _content = content.split("\n")
             first_line = _content.pop(0)
-            lines.append('echo "%s" > %s' % (first_line, self.target))
-            lines.append("cat >> %s << EOF" % self.target)
+            command = '%s echo "%s" > %s' % (self.sudo, first_line, self.target)
+            lines.append(command.lstrip())
+            command = "%s cat >> %s << EOF" % (self.sudo, self.target)
+            lines.append(command.lstrip())
             lines.append("\n".join(_content))
             lines.append("EOF")
         else:
-            lines.append("cat > %s << EOF" % self.target)
+            command = "%s cat >> %s << EOF" % (self.sudo, self.target)
+            lines.append(command.lstrip())
             lines.append(content)
             lines.append("EOF")
 
@@ -583,6 +711,25 @@ class Template(object):
             pass
 
         return "\n".join(lines)
+
+    def get_target_language(self):
+        if self.language is not None:
+            return self.language
+
+        if self.target.endswith(".conf"):
+            return "conf"
+        elif self.target.endswith(".ini"):
+            return "ini"
+        elif self.target.endswith(".php"):
+            return "php"
+        elif self.target.endswith(".py"):
+            return "python"
+        elif self.target.endswith(".sh"):
+            return "bash"
+        elif self.target.endswith(".yml"):
+            return "yaml"
+        else:
+            return "text"
 
     def get_template(self):
         """Get the template path.

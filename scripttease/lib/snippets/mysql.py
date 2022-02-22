@@ -54,7 +54,7 @@ mysql = {
             '{% if admin_pass %}--password="{{ admin_pass }}"{% endif %}',
             '--host={{ host|default("localhost") }}',
             '--port={{ port|default("3306") }}',
-            '--execute="GRANT {{ args[0] }} ON {{ database }}.* TO \'{{ user }}\'@\'{{ host|default("localhost") }}\'"'
+            '--execute="GRANT {{ args[0] }} ON {{ database|default("default") }}.* TO \'{{ user }}\'@\'{{ host|default("localhost") }}\'"'
         ],
         'user': {
             'create': [
