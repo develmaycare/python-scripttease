@@ -66,7 +66,7 @@ class INILoader(BaseLoader):
                     #     continue
 
                     # Arguments surrounded by quotes are considered to be one argument. All others are split into a
-                    # list to be passed to the callback. It is also possible that this is a call where no arguments are
+                    # list to be passed to the parser. It is also possible that this is a call where no arguments are
                     # present, so the whole thing is wrapped to protect against an index error. A TypeError is raised in
                     # cases where a command is provided with no positional arguments; we interpret this as True.
                     try:

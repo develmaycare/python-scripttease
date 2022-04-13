@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 __all__ = (
-    "filter_snippets",
+    # "filter_snippets",
     "load_variables",
     "BaseLoader",
     "Snippet",
@@ -26,32 +26,40 @@ __all__ = (
 # Functions
 
 
-def filter_snippets(snippets, environments=None, tags=None):
-    """Filter snippets based on the given criteria.
-
-    :param snippets: The snippets to be filtered.
-    :type snippets: list[scripttease.lib.loaders.base.Snippet]
-
-    :param environments: Environment names to be matched.
-    :type environments: list[str]
-
-    :param tags: Tag names to be matched.
-    :type tags: list[str]
-
-    """
-    filtered = list()
-    for snippet in snippets:
-        if environments is not None and len(snippet.environments) > 0:
-            if not any_list_item(environments, snippet.environments):
-                continue
-
-        if tags is not None:
-            if not any_list_item(tags, snippet.tags):
-                continue
-
-        filtered.append(snippet)
-
-    return filtered
+# def filter_commands(commands, key, value):
+#     """Filter commands based on the given criteria.
+#
+#     :param commands: The commands to be filtered.
+#     :type commands: list[scripttease.lib.commands.base.Command]
+#
+#     :param key: The attribute name to be matched.
+#     :type key: str
+#
+#     :param value: The value of the attribute.
+#
+#     """
+#     filtered = list()
+#     for command in commands:
+#         try:
+#             values = getattr(command, key)
+#         except AttributeError:
+#             continue
+#
+#         if not any_list_item(values, key):
+#             continue
+#
+#         if not any_list_item()
+#         if environments is not None and len(snippet.environments) > 0:
+#             if not any_list_item(environments, snippet.environments):
+#                 continue
+#
+#         if tags is not None:
+#             if not any_list_item(tags, snippet.tags):
+#                 continue
+#
+#         filtered.append(snippet)
+#
+#     return filtered
 
 
 def load_variables(path, env=None):
