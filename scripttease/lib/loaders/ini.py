@@ -29,14 +29,9 @@ class INILoader(BaseLoader):
             log.warning("Input file does not exist: %s" % self.path)
             return False
 
-        if self.context is not None:
-            try:
-                content = parse_jinja_template(self.path, self.get_context())
-            except Exception as e:
-                log.error("Failed to process %s INI file as template: %s" % (self.path, e))
-                return False
-        else:
-            content = read_file(self.path)
+        content = self.read_file()
+        if content is None:
+            return False
 
         ini = ConfigParser()
         try:
@@ -59,11 +54,13 @@ class INILoader(BaseLoader):
                 # The first key/value pair is the command name and arguments.
                 if count == 0:
                     command_name = key
+                    # kwargs['name'] = command_name
 
-                    # Explanations aren't processed like commands, so the text need not be surrounded by double quotes.
-                    # if command_name == "explain":
-                    #     args.append(value)
-                    #     continue
+                    # Explanations and screenshots aren't processed like commands, so the text need not be surrounded
+                    # by double quotes.
+                    if command_name in ("explain", "screenshot"):
+                        args.append(value)
+                        continue
 
                     # Arguments surrounded by quotes are considered to be one argument. All others are split into a
                     # list to be passed to the parser. It is also possible that this is a call where no arguments are
@@ -85,7 +82,7 @@ class INILoader(BaseLoader):
 
                 count += 1
 
-            self.snippets.append((command_name, args, kwargs))
+            self.commands.append((command_name, args, kwargs))
 
         self.is_loaded = True
         return True

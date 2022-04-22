@@ -47,6 +47,7 @@ class YMLLoader(BaseLoader):
             count = 0
             kwargs = self.options.copy()
             kwargs['comment'] = comment
+            kwargs['name'] = command
 
             for key, value in tokens.items():
                 if key.startswith("_"):
@@ -54,6 +55,12 @@ class YMLLoader(BaseLoader):
 
                 if count == 0:
                     command_name = key
+
+                    # Explanations and screenshots aren't processed like commands, so the text need not be surrounded
+                    # by double quotes.
+                    if command_name in ("explain", "screenshot"):
+                        args.append(value)
+                        continue
 
                     try:
                         if value[0] == '"':

@@ -2,16 +2,18 @@
 
 from commonkit import split_csv
 from .base import Command, Template
-from .common import COMMON_MAPPINGS
 from .django import DJANGO_MAPPINGS
+from .messages import MESSAGE_MAPPINGS
 from .mysql import MYSQL_MAPPINGS
 from .pgsql import PGSQL_MAPPINGS
+from .php import PHP_MAPPINGS
 from .posix import POSIX_MAPPINGS
+from .python import PYTHON_MAPPINGS
 
 # Exports
 
 __all__ = (
-    "MAPPINGS",
+    "UBUNTU_MAPPINGS",
     "apache",
     "apache_disable_module",
     "apache_disable_site",
@@ -22,7 +24,6 @@ __all__ = (
     "apache_start",
     "apache_stop",
     "apache_test",
-    "command_exists",
     "service_reload",
     "service_restart",
     "service_start",
@@ -37,17 +38,7 @@ __all__ = (
     "user",
 )
 
-
-def command_exists(name):
-    """Indicates whether a given command exists in this overlay.
-
-    :param name: The name of the command.
-    :type name: str
-
-    :rtype: bool
-
-    """
-    return name in MAPPINGS
+# Functions
 
 
 def apache(op, **kwargs):
@@ -219,7 +210,7 @@ def system_install(name, **kwargs):
     """
     kwargs.setdefault("comment", "install system package %s" % name)
 
-    return Command("apt-get install -y %s" % name, **kwargs)
+    return Command("apt install -y %s" % name, **kwargs)
 
 
 def system_reboot(**kwargs):
@@ -236,31 +227,19 @@ def system_uninstall(name, **kwargs):
     """
     kwargs.setdefault("comment", "remove system package %s" % name)
 
-    return Command("apt-get uninstall -y %s" % name, **kwargs)
+    return Command("apt uninstall -y %s" % name, **kwargs)
 
 
 def system_update(**kwargs):
     kwargs.setdefault("comment", "update system package info")
 
-    return Command("apt-get update -y", **kwargs)
+    return Command("apt update -y", **kwargs)
 
 
 def system_upgrade(**kwargs):
     kwargs.setdefault("comment", "upgrade the system")
 
-    return Command("apt-get upgrade -y", **kwargs)
-
-
-def template(source, target, backup=True, parser=None, **kwargs):
-    """Create a file from a template.
-
-    - source (str): The path to the template file.
-    - target (str): The path to where the new file should be created.
-    - backup (bool): Indicates whether a backup should be made if the target file already exists.
-    - parser (str): The parser to use ``jinja`` (the default) or ``simple``.
-
-    """
-    return Template(source, target, backup=backup, parser=parser, **kwargs)
+    return Command("apt upgrade -y", **kwargs)
 
 
 def user(name, groups=None, home=None, op="add", password=None, **kwargs):
@@ -305,7 +284,7 @@ def user(name, groups=None, home=None, op="add", password=None, **kwargs):
         raise NameError("Unsupported or unrecognized operation: %s" % op)
 
 
-MAPPINGS = {
+UBUNTU_MAPPINGS = {
     'apache': apache,
     'apache.disable_module': apache_disable_module,
     'apache.disable_site': apache_disable_site,
@@ -323,15 +302,16 @@ MAPPINGS = {
     'start': service_start,
     'stop': service_stop,
     'system': system,
-    'template': template,
     'update': system_update,
     'uninstall': system_uninstall,
     'upgrade': system_upgrade,
     'user': user,
 }
 
-MAPPINGS.update(COMMON_MAPPINGS)
-MAPPINGS.update(DJANGO_MAPPINGS)
-MAPPINGS.update(MYSQL_MAPPINGS)
-MAPPINGS.update(PGSQL_MAPPINGS)
-MAPPINGS.update(POSIX_MAPPINGS)
+UBUNTU_MAPPINGS.update(DJANGO_MAPPINGS)
+UBUNTU_MAPPINGS.update(MESSAGE_MAPPINGS)
+UBUNTU_MAPPINGS.update(MYSQL_MAPPINGS)
+UBUNTU_MAPPINGS.update(PGSQL_MAPPINGS)
+UBUNTU_MAPPINGS.update(PHP_MAPPINGS)
+UBUNTU_MAPPINGS.update(POSIX_MAPPINGS)
+UBUNTU_MAPPINGS.update(PYTHON_MAPPINGS)

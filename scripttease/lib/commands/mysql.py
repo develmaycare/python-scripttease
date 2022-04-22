@@ -3,6 +3,7 @@ from .base import EXCLUDED_KWARGS, Command
 
 
 __all__ = (
+    "MYSQL_MAPPINGS",
     "mysql_create",
     "mysql_dump",
     "mysql_exists",
@@ -171,3 +172,14 @@ def mysql_user(name, admin_pass=None, admin_user="root", op="create", password=N
         return command
     else:
         raise InvalidInput("Unrecognized or unsupported MySQL user operation: %s" % op)
+
+
+MYSQL_MAPPINGS = {
+    'mysql.create': mysql_create,
+    'mysql.drop': mysql_drop,
+    'mysql.dump': mysql_dump,
+    'mysql.exists': mysql_exists,
+    'mysql.grant': mysql_grant,
+    # 'mysql.sql': mysql_exec,
+    'mysql.user': mysql_user,
+}

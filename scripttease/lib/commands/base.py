@@ -11,7 +11,6 @@ log = logging.getLogger(__name__)
 
 __all__ = (
     "EXCLUDED_KWARGS",
-    "run",
     "Command",
     "ItemizedCommand",
     "Sudo",
@@ -24,6 +23,8 @@ EXCLUDED_KWARGS = [
     "cd",
     "comment",
     "condition",
+    "environment",
+    "name",
     "prefix",
     "register",
     "stop",
@@ -31,27 +32,17 @@ EXCLUDED_KWARGS = [
     "tags",
 ]
 
-# Functions
-
-
-def run(statement, **kwargs):
-    """Run any statement.
-
-    - statement (str): The statement to be executed.
-
-    """
-    kwargs.setdefault("comment", "run statement")
-    return Command(statement, **kwargs)
-
 # Classes
 
 
 class Command(object):
 
-    def __init__(self, statement, cd=None, comment=None, condition=None, prefix=None, register=None, stop=False, sudo=None, tags=None, **kwargs):
+    def __init__(self, statement, cd=None, comment=None, condition=None, name=None, prefix=None, register=None, stop=False, sudo=None, tags=None, **kwargs):
         self.cd = cd
         self.comment = comment
         self.condition = condition
+        self.name = name
+        self.number = None
         self.prefix = prefix
         self.register = register
         self.statement = statement
@@ -143,36 +134,10 @@ class Command(object):
         return self.statement
 
 
-class Sudo(object):
-    """Helper class for defining sudo options."""
-
-    def __init__(self, enabled=False, user="root"):
-        """Initialize the helper.
-
-        :param enabled: Indicates sudo is enabled.
-        :type enabled: bool
-
-        :param user: The user to be invoked.
-        :type user: str
-
-        """
-        self.enabled = enabled
-        self.user = user
-
-    def __bool__(self):
-        return self.enabled
-
-    def __str__(self):
-        if self.enabled:
-            return "sudo -u %s" % self.user
-
-        return ""
-
-
 class ItemizedCommand(object):
     """An itemized command represents multiple commands of with the same statement but different parameters."""
 
-    def __init__(self, callback, items, *args, name=None, **kwargs):
+    def __init__(self, callback, items, *args, **kwargs):
         """Initialize the command.
 
         :param callback: The function to be used to generate the command.
@@ -193,7 +158,6 @@ class ItemizedCommand(object):
         self.callback = callback
         self.items = items
         self.kwargs = kwargs
-        self.name = name
 
         # Set defaults for when ItemizedCommand is referenced directly before individual commands are instantiated. For
         # example, when command filtering occurs.
@@ -243,6 +207,32 @@ class ItemizedCommand(object):
     def is_itemized(self):
         """Always returns ``True``."""
         return True
+
+
+class Sudo(object):
+    """Helper class for defining sudo options."""
+
+    def __init__(self, enabled=False, user="root"):
+        """Initialize the helper.
+
+        :param enabled: Indicates sudo is enabled.
+        :type enabled: bool
+
+        :param user: The user to be invoked.
+        :type user: str
+
+        """
+        self.enabled = enabled
+        self.user = user
+
+    def __bool__(self):
+        return self.enabled
+
+    def __str__(self):
+        if self.enabled:
+            return "sudo -u %s" % self.user
+
+        return ""
 
 
 class Template(object):

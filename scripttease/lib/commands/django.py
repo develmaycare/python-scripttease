@@ -90,3 +90,13 @@ def django_static(**kwargs):
     kwargs.setdefault("comment", "collect static files")
     kwargs.setdefault("noinput", True)
     return django("collectstatic", **kwargs)
+
+
+DJANGO_MAPPINGS = {
+    'django': django,
+    'django.check': django_check,
+    'django.dump': django_dump,
+    'django.load': django_load,
+    'django.migration': django_migrate,
+    'django.static': django_static,
+}

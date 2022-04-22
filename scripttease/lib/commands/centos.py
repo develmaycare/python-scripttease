@@ -3,21 +3,23 @@
 from commonkit import split_csv
 from .base import Command, Template
 from .django import DJANGO_MAPPINGS
+from .messages import MESSAGE_MAPPINGS
 from .mysql import MYSQL_MAPPINGS
 from .pgsql import PGSQL_MAPPINGS
+from .php import PHP_MAPPINGS
 from .posix import POSIX_MAPPINGS
+from .python import PYTHON_MAPPINGS
 
 # Exports
 
 __all__ = (
-    "MAPPINGS",
+    "CENTOS_MAPPINGS",
     "apache",
     "apache_reload",
     "apache_restart",
     "apache_start",
     "apache_stop",
     "apache_test",
-    "command_exists",
     "service_reload",
     "service_restart",
     "service_start",
@@ -28,21 +30,10 @@ __all__ = (
     "system_update",
     "system_upgrade",
     "system_uninstall",
-    "template",
     "user",
 )
 
-
-def command_exists(name):
-    """Indicates whether a given command exists in this overlay.
-
-    :param name: The name of the command.
-    :type name: str
-
-    :rtype: bool
-
-    """
-    return name in MAPPINGS
+# Functions
 
 
 def apache(op, **kwargs):
@@ -203,18 +194,6 @@ def system_upgrade(**kwargs):
     return Command("yum update -y", **kwargs)
 
 
-def template(source, target, backup=True, parser=None, **kwargs):
-    """Create a file from a template.
-
-    - source (str): The path to the template file.
-    - target (str): The path to where the new file should be created.
-    - backup (bool): Indicates whether a backup should be made if the target file already exists.
-    - parser (str): The parser to use ``jinja`` (the default) or ``simple``.
-
-    """
-    return Template(source, target, backup=backup, parser=parser, **kwargs)
-
-
 def user(name, groups=None, home=None, op="add", password=None, **kwargs):
     """Create or remove a user.
 
@@ -256,7 +235,7 @@ def user(name, groups=None, home=None, op="add", password=None, **kwargs):
         raise NameError("Unsupported or unrecognized operation: %s" % op)
 
 
-MAPPINGS = {
+CENTOS_MAPPINGS = {
     'apache': apache,
     'install': system_install,
     'reboot': system_reboot,
@@ -265,15 +244,16 @@ MAPPINGS = {
     'start': service_start,
     'stop': service_stop,
     'system': system,
-    'template': template,
     'update': system_update,
     'uninstall': system_uninstall,
     'upgrade': system_upgrade,
     'user': user,
 }
 
-MAPPINGS.update(COMMON_MAPPINGS)
-MAPPINGS.update(DJANGO_MAPPINGS)
-MAPPINGS.update(MYSQL_MAPPINGS)
-MAPPINGS.update(PGSQL_MAPPINGS)
-MAPPINGS.update(POSIX_MAPPINGS)
+CENTOS_MAPPINGS.update(DJANGO_MAPPINGS)
+CENTOS_MAPPINGS.update(MESSAGE_MAPPINGS)
+CENTOS_MAPPINGS.update(MYSQL_MAPPINGS)
+CENTOS_MAPPINGS.update(PHP_MAPPINGS)
+CENTOS_MAPPINGS.update(PGSQL_MAPPINGS)
+CENTOS_MAPPINGS.update(POSIX_MAPPINGS)
+CENTOS_MAPPINGS.update(PYTHON_MAPPINGS)

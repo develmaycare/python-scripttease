@@ -37,3 +37,9 @@ def python_virtualenv(name, **kwargs):
     kwargs.setdefault("comment", "create %s virtual environment" % name)
 
     return Command("virtualenv %s" % name, **kwargs)
+
+
+PYTHON_MAPPINGS = {
+    'pip': python_pip,
+    'virtualenv': python_virtualenv,
+}

@@ -21,8 +21,10 @@ def explain(message, heading=None, **kwargs):
     return Command(message, **kwargs)
 
 
-def screenshot(image, caption=None, **kwargs):
+def screenshot(image, caption=None, height=None, width=None, **kwargs):
     kwargs['caption'] = caption
+    kwargs['height'] = height
+    kwargs['width'] = width
 
     return Command(image, **kwargs)
 
@@ -49,3 +51,13 @@ def twist(message, title="Notice", url=None, **kwargs):
     statement.append(url)
 
     return Command(" ".join(statement), **kwargs)
+
+
+MESSAGE_MAPPINGS = {
+    'dialog': dialog,
+    'echo': echo,
+    'explain': explain,
+    'screenshot': screenshot,
+    'slack': slack,
+    'twist': twist,
+}

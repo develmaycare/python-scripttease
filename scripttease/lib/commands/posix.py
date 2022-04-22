@@ -103,7 +103,7 @@ def copy(from_path, to_path, overwrite=False, recursive=False, **kwargs):
     return Command(" ".join(a), **kwargs)
 
 
-def dir(path, group=None, mode=None, owner=None, recursive=True, **kwargs):
+def directory(path, group=None, mode=None, owner=None, recursive=True, **kwargs):
     """Create a directory.
 
     - path (str): The path to be created.
@@ -313,6 +313,13 @@ def replace(path, backup=".b", delimiter="/", find=None, replace=None, **kwargs)
     template = "sed -i %(backup)s 's%(delimiter)s%(pattern)s%(delimiter)s%(replace)s%(delimiter)sg' %(path)s"
 
     statement = template % context
+
+    return Command(statement, **kwargs)
+
+
+def run(statement, **kwargs):
+    """Run any command."""
+    kwargs.setdefault("comment", "run statement")
 
     return Command(statement, **kwargs)
 
@@ -530,3 +537,24 @@ def write(path, content=None, **kwargs):
 
     return Command(" ".join(a), **kwargs)
 
+
+POSIX_MAPPINGS = {
+    'append': append,
+    'archive': archive,
+    'certbot': certbot,
+    'copy': copy,
+    'dir': directory,
+    'extract': extract,
+    'link': link,
+    'move': move,
+    'perms': perms,
+    'remove': remove,
+    'replace': replace,
+    'run': run,
+    'rysnc': rsync,
+    'scopy': scopy,
+    'sync': sync,
+    'touch': touch,
+    'wait': wait,
+    'write': write,
+}

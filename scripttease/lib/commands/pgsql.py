@@ -1,21 +1,4 @@
 """
-[run django checks]
-django: check
-
-[export fixtures]
-django: dump lookups.Category
-
-[import fixtures]
-django: load lookups.Category
-
-[migrate the database]
-django: migrate
-
-[collect static files]
-django: static
-
-[create super user (ad hoc command)]
-django: createsuperuser root
 
 """
 from ...exceptions import InvalidInput
@@ -23,6 +6,7 @@ from .base import EXCLUDED_KWARGS, Command
 
 
 __all__ = (
+    "PGSQL_MAPPINGS",
     "pgsql_create",
     "pgsql_drop",
     "pgsql_dump",
@@ -30,6 +14,7 @@ __all__ = (
     "pgsql_load",
     "pgsql_user",
 )
+
 
 def pgsql(command, *args, host="localhost", excluded_kwargs=None, password=None, port=5432, user="postgres", **kwargs):
     # The excluded parameters (filtered below) may vary based on implementation. We do, however, need a default.
@@ -153,3 +138,13 @@ def pgsql_user(name, admin_pass=None, admin_user="postgres", op="create", passwo
         return command
     else:
         raise InvalidInput("Unrecognized or unsupported Postgres user operation: %s" % op)
+
+
+PGSQL_MAPPINGS = {
+    'pgsql.create': pgsql_create,
+    'pgsql.drop': pgsql_drop,
+    'pgsql.dump': pgsql_dump,
+    'pgsql.exists': pgsql_exists,
+    # 'pgsql.sql': pgsql_exec,
+    'pgsql.user': pgsql_user,
+}
