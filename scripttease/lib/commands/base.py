@@ -10,27 +10,11 @@ log = logging.getLogger(__name__)
 # Exports
 
 __all__ = (
-    "EXCLUDED_KWARGS",
     "Command",
     "ItemizedCommand",
     "Sudo",
     "Template",
 )
-
-# Constants
-
-EXCLUDED_KWARGS = [
-    "cd",
-    "comment",
-    "condition",
-    "environment",
-    "name",
-    "prefix",
-    "register",
-    "stop",
-    "sudo",
-    "tags",
-]
 
 # Classes
 
@@ -194,12 +178,13 @@ class ItemizedCommand(object):
         comment = kwargs.pop("comment", "execute multiple commands")
 
         a = list()
-        # a.append("# %s" % comment)
+
+        if include_comment:
+            a.append("# %s" % comment)
 
         commands = self.get_commands()
         for c in commands:
             a.append(c.get_statement(cd=cd, include_comment=False, include_register=include_register, include_stop=include_stop))
-            a.append("")
 
         return "\n".join(a)
 

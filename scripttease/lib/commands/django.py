@@ -18,7 +18,8 @@ django: static
 django: createsuperuser root
 
 """
-from .base import EXCLUDED_KWARGS, Command
+from ...constants import EXCLUDED_KWARGS
+from .base import Command
 
 
 def django(management_command, *args, excluded_kwargs=None, **kwargs):
@@ -62,7 +63,7 @@ def django_check(**kwargs):
 
 
 def django_dump(target, path=None, **kwargs):
-    kwargs.setdefault("comment", "dump app/model data")
+    kwargs.setdefault("comment", "dump app/model data for %s" % target)
     kwargs.setdefault("format", "json")
     kwargs.setdefault("indent", 4)
 
@@ -73,7 +74,7 @@ def django_dump(target, path=None, **kwargs):
 
 
 def django_load(target, path=None, **kwargs):
-    kwargs.setdefault("comment", "load app/model data")
+    kwargs.setdefault("comment", "load app/model data from %s" % target)
     input_format = kwargs.pop("format", "json")
     if path is None:
         path = "../deploy/fixtures/%s.%s" % (target, input_format)
@@ -97,6 +98,6 @@ DJANGO_MAPPINGS = {
     'django.check': django_check,
     'django.dump': django_dump,
     'django.load': django_load,
-    'django.migration': django_migrate,
+    'django.migrate': django_migrate,
     'django.static': django_static,
 }

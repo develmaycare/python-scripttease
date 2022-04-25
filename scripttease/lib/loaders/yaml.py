@@ -77,7 +77,7 @@ class YMLLoader(BaseLoader):
 
                 count += 1
 
-            self.snippets.append((command_name, args, kwargs))
+            self.commands.append((command_name, args, kwargs))
 
         self.is_loaded = True
 
