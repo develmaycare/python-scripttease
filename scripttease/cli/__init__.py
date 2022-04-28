@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from commonkit.logging import LoggingHelper
-from ..constants import LOGGER_NAME
+from ..variables import LOGGER_NAME
 from ..version import DATE as VERSION_DATE, VERSION
 from . import initialize
 from . import subcommands

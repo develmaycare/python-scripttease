@@ -1,10 +1,11 @@
 import logging
 from ..constants import EXCLUDED_KWARGS, PROFILE
+from ..variables import LOGGER_NAME
 from .commands.base import Command, ItemizedCommand, Template
 from .commands.centos import CENTOS_MAPPINGS
 from .commands.ubuntu import UBUNTU_MAPPINGS
 
-log = logging.getLogger(__name__)
+log = logging.getLogger(LOGGER_NAME)
 
 
 def command_factory(loader, excluded_kwargs=None, mappings=None, profile=PROFILE.UBUNTU):

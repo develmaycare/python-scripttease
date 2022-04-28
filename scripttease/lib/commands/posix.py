@@ -1,5 +1,5 @@
 import os
-from .base import Command
+from .base import Command, Prompt
 
 
 def append(path, content=None, **kwargs):
@@ -264,6 +264,30 @@ def perms(path, group=None, mode=None, owner=None, recursive=False, **kwargs):
         a.append(c.get_statement(include_comment=True))
 
     return Command("\n".join(a), **kwargs)
+
+
+def prompt(name, back_title="Input", choices=None, default=None, dialog=False, help_text=None, label=None, **kwargs):
+    """Prompt the user for input.
+
+    - name (str): The programmatic name of the input.
+    - back_title (str): The back title used with the dialog command.
+    - choices (str | list): A list of valid choices.
+    - default: The default value.
+    - dialog (bool): Use a dialog command for the prompt.
+    - help_text (str): The text to display with the dialog command.
+    - label (str): The label for the input.
+
+    """
+    return Prompt(
+        name,
+        back_title=back_title,
+        choices=choices,
+        default=default,
+        dialog=dialog,
+        help_text=help_text,
+        label=label,
+        **kwargs
+    )
 
 
 def remove(path, force=False, recursive=False, **kwargs):
@@ -548,6 +572,7 @@ POSIX_MAPPINGS = {
     'link': link,
     'move': move,
     'perms': perms,
+    'prompt': prompt,
     'remove': remove,
     'replace': replace,
     'run': run,

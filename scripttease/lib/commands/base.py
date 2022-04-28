@@ -1,17 +1,20 @@
 # Imports
 
-from commonkit import parse_jinja_template, read_file
+from commonkit import indent, parse_jinja_template, read_file, split_csv
 from jinja2 import TemplateNotFound, TemplateError
 import logging
 import os
+from ...variables import LOGGER_NAME
 
-log = logging.getLogger(__name__)
+log = logging.getLogger(LOGGER_NAME)
 
 # Exports
 
 __all__ = (
     "Command",
+    "Content",
     "ItemizedCommand",
+    "Prompt",
     "Sudo",
     "Template",
 )
@@ -118,6 +121,135 @@ class Command(object):
         return self.statement
 
 
+class Content(object):
+
+    def __init__(self, content_type, caption=None, css=None, heading=None, height=None, image=None, message=None,
+                 width=None, **kwargs):
+        self.caption = caption
+        self.css = css
+        self.heading = heading
+        self.height = height
+        self.image = image
+        self.message = message
+        self.width = width
+        self.name = "content"
+        self.type = content_type
+
+        self.kwargs = kwargs
+
+    def __getattr__(self, item):
+        return self.kwargs.get(item)
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.content_type)
+
+    @property
+    def is_itemized(self):
+        """Always returns ``False``. Content cannot be itemized."""
+        return False
+
+    def get_output(self, output_format):
+        if self.content_type == "explain":
+            return self._get_message_output(output_format)
+        elif self.content_type == "screenshot":
+            return self._get_image_output(output_format)
+        else:
+            log.warning("Invalid content type: %s" % self.content_type)
+            return None
+
+    # noinspection PyUnusedLocal
+    def get_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
+        """Override to return only bash output format."""
+        return self.get_output("bash")
+
+    def _get_image_output(self, output_format):
+        """Get the output of the content when the content type is an image."""
+        a = list()
+
+        if output_format == "bash":
+            if self.caption:
+                a.append("# %s" % self.caption)
+
+            a.append("# %s" % self.image)
+        elif output_format == "html":
+            b = list()
+            b.append('<img src="%s"' % self.image)
+            b.append('alt="%s"' % self.caption or self.comment)
+
+            if self.css is not None:
+                b.append('class="%s"' % self.css)
+
+            if self.height is not None:
+                b.append('height="%s"' % self.height)
+
+            if self.width is not None:
+                b.append('width="%s"' % self.width)
+
+            a.append(" ".join(b) + ">")
+        elif output_format == "md":
+            a.append("![%s](%s)" % (self.caption or self.comment, self.image))
+            a.append("")
+        elif output_format == "rst":
+            a.append(".. figure:: %s" % self.image)
+
+            if self.caption is not None:
+                a.append(indent(":alt: %s" % self.caption, 8))
+
+            if self.height is not None:
+                a.append(indent(":height: %s" % self.height, 8))
+
+            if self.height is not None:
+                a.append(indent(":height: %s" % self.height, 8))
+        else:
+            if self.caption:
+                a.append("%s: %s" % (self.caption, self.image))
+            else:
+                a.append(self.image)
+
+        return "\n".join(a)
+
+    def _get_message_output(self, output_format):
+        """Get the output of the content when the content type is a message."""
+        a = list()
+
+        if output_format == "bash":
+            if self.heading:
+                a.append("# %s: %s" % (self.heading, self.message))
+            else:
+                a.append("# %s" % self.message)
+
+            a.append("")
+        elif output_format == "html":
+            if self.heading:
+                a.append("<h2>%s</h2>" % self.heading)
+
+            a.append("<p>%s</p>" % self.message)
+        elif output_format == "md":
+            if self.heading:
+                a.append("## %s" % self.heading)
+                a.append("")
+
+            a.append(self.message)
+            a.append("")
+        elif output_format == "rst":
+            if self.heading:
+                a.append(self.heading)
+                a.append("=" * len(self.heading))
+                a.append("")
+
+            a.append(self.message)
+            a.append("")
+        else:
+            if self.heading:
+                a.append("***** %s *****" % self.heading)
+                a.append("")
+
+            a.append(self.message)
+            a.append("")
+
+        return "\n".join(a)
+
+
 class ItemizedCommand(object):
     """An itemized command represents multiple commands of with the same statement but different parameters."""
 
@@ -192,6 +324,133 @@ class ItemizedCommand(object):
     def is_itemized(self):
         """Always returns ``True``."""
         return True
+
+
+class Prompt(Command):
+    """Prompt the user for input."""
+
+    def __init__(self, name, back_title="Input", choices=None, default=None, dialog=False, help_text=None, label=None,
+                 **kwargs):
+        """Initialize a prompt for user input.
+
+        :param name: The variable name.
+        :type name: str
+
+        :param back_title: The back title of the input. Used only when ``dialog`` is enabled.
+        :type back_title: str
+
+        :param choices: Valid choices for the variable. May be given as a list of strings or a comma separated string.
+        :type choices: list[str] | str
+
+        :param default: The default value of the variable.
+
+        :param dialog: Indicates the dialog command should be used.
+        :type dialog: bool
+
+        :param help_text: Additional text to display. Only use when ``fancy`` is ``True``.
+        :type help_text: str
+
+        :param label: The label of the prompt.
+
+        """
+        self.back_title = back_title
+        self.default = default
+        self.dialog_enabled = dialog
+        self.help_text = help_text
+        self.label = label or name.replace("_", " ").title()
+        self.variable_name = name
+
+        if type(choices) in (list, tuple):
+            self.choices = choices
+        elif type(choices) is str:
+            self.choices = split_csv(choices, smart=False)
+        else:
+            self.choices = None
+
+        kwargs.setdefault("comment", "prompt user for %s input" % name)
+
+        super().__init__(name, **kwargs)
+
+    def get_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
+        """Get the statement using dialog or read."""
+        if self.dialog_enabled:
+            return self._get_dialog_statement()
+
+        return self._get_read_statement()
+
+    def _get_dialog_statement(self):
+        """Get the dialog statement."""
+        a = list()
+
+        a.append('dialog --clear --backtitle "%s" --title "%s"' % (self.back_title, self.label))
+
+        if self.choices is not None:
+            a.append('--menu "%s" 15 40 %s' % (self.help_text or "Select", len(self.choices)))
+            count = 1
+            for choice in self.choices:
+                a.append('"%s" %s' % (choice, count))
+                count += 1
+
+            a.append('2>/tmp/input.txt')
+        else:
+            if self.help_text is not None:
+                a.append('--inputbox "%s"' % self.help_text)
+            else:
+                a.append('--inputbox ""')
+
+            a.append('8 60 2>/tmp/input.txt')
+
+        b = list()
+
+        b.append('touch /tmp/input.txt')
+        b.append(" ".join(a))
+
+        b.append('%s=$(</tmp/input.txt)' % self.variable_name)
+        b.append('clear')
+        b.append('rm /tmp/input.txt')
+
+        if self.default is not None:
+            b.append('if [[ -z "$%s" ]]; then %s="%s"; fi;' % (self.variable_name, self.variable_name, self.default))
+
+        # b.append('echo "$%s"' % self.name)
+
+        return "\n".join(b)
+
+    def _get_read_statement(self):
+        """Get the standard read statement."""
+        a = list()
+
+        if self.choices is not None:
+            a.append('echo "%s "' % self.label)
+
+            options = list()
+            for choice in self.choices:
+                options.append('"%s"' % choice)
+
+            a.append('options=(%s)' % " ".join(options))
+            a.append('select opt in "${options[@]}"')
+            a.append('do')
+            a.append('    case $opt in')
+
+            for choice in self.choices:
+                a.append('        "%s") %s=$opt; break;;' % (choice, self.variable_name))
+
+            # a.append('        %s) %s=$opt;;' % ("|".join(self.choices), self.name))
+            a.append('        *) echo "invalid choice";;')
+            a.append('    esac')
+            a.append('done')
+
+            # a.append("read %s" % self.name)
+        else:
+            a.append('echo -n "%s "' % self.label)
+            a.append("read %s" % self.variable_name)
+
+        if self.default is not None:
+            a.append('if [[ -z "$%s" ]]; then %s="%s"; fi;' % (self.variable_name, self.variable_name, self.default))
+
+        # a.append('echo "$%s"' % self.name)
+
+        return "\n".join(a)
 
 
 class Sudo(object):
@@ -296,6 +555,9 @@ class Template(object):
 
         # Get the content; e.g. parse the template.
         content = self.get_content()
+        if content is None:
+            lines.append("# NOT CONTENT AVAILABLE")
+            return "\n".join(lines)
 
         # Templates that are bash scripts will fail to write because of the shebang.
         if content.startswith("#!"):

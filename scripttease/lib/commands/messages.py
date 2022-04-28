@@ -1,4 +1,4 @@
-from .base import Command
+from .base import Command, Content
 from ...exceptions import InvalidInput
 
 
@@ -17,16 +17,11 @@ def echo(message, **kwargs):
 
 
 def explain(message, heading=None, **kwargs):
-    kwargs['heading'] = heading
-    return Command(message, **kwargs)
+    return Content("explain", message=message, heading=heading, **kwargs)
 
 
 def screenshot(image, caption=None, height=None, width=None, **kwargs):
-    kwargs['caption'] = caption
-    kwargs['height'] = height
-    kwargs['width'] = width
-
-    return Command(image, **kwargs)
+    return Content("screenshot", caption=caption, height=height, image=image, width=width, **kwargs)
 
 
 def slack(message, url=None, **kwargs):
