@@ -58,7 +58,7 @@ setup(
     test_suite='runtests.runtests',
     entry_points={
       'console_scripts': [
-          'tease = script_tease.cli:main_command',
+          'tease = scripttease.cli:main_command',
       ],
     },
 )

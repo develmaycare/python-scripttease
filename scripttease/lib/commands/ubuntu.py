@@ -276,10 +276,10 @@ def user(name, groups=None, home=None, op="add", password=None, **kwargs):
         for c in commands:
             a.append(c.get_statement(include_comment=True))
 
-        return Command("\n".join(a), **kwargs)
+        return Command("\n".join(a), name="user_add", **kwargs)
     elif op == "remove":
         kwargs.setdefault("comment", "remove a user named %s" % name)
-        return Command("deluser %s" % name, **kwargs)
+        return Command("deluser %s" % name, name="user_remove", **kwargs)
     else:
         raise NameError("Unsupported or unrecognized operation: %s" % op)
 

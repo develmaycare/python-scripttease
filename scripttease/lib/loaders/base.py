@@ -8,7 +8,6 @@ import logging
 import os
 from ...constants import EXCLUDED_KWARGS
 from ..contexts import Variable
-from ..snippets.mappings import MAPPINGS
 
 log = logging.getLogger(__name__)
 
@@ -149,6 +148,8 @@ class BaseLoader(File):
         self.context = context
         self.is_loaded = False
         self.locations = locations or list()
+        self.profile = kwargs.pop("profile", "ubuntu")
+
         self.options = kwargs
 
         super().__init__(path)

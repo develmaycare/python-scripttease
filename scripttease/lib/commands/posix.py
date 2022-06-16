@@ -120,11 +120,15 @@ def directory(path, group=None, mode=None, owner=None, recursive=True, **kwargs)
     if recursive:
         statement.append("-p")
 
+    statement.append(path)
+
     if group:
         if recursive:
             statement.append("&& chgrp -R %s" % group)
         else:
             statement.append("&& chgrp %s" % group)
+
+        statement.append(path)
 
     if owner:
         if recursive:
@@ -132,7 +136,7 @@ def directory(path, group=None, mode=None, owner=None, recursive=True, **kwargs)
         else:
             statement.append("&& chown %s" % owner)
 
-    statement.append(path)
+        statement.append(path)
 
     return Command(" ".join(statement), **kwargs)
 
@@ -381,6 +385,13 @@ def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, 
     # rsync -e "ssh -i $(SSH_KEY) -p $(SSH_PORT)" -P -rvzc --delete
     # $(OUTPUTH_PATH) $(SSH_USER)@$(SSH_HOST):$(UPLOAD_PATH) --cvs-exclude;
 
+    # ansible:
+    # /usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh='/usr/bin/ssh -S none -
+    # i /home/shawn/.ssh/sharedservices_group -o Port=4894 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    # --rsync-path='sudo -u root rsync'
+    # --exclude-from=/home/shawn/Work/app_sharedservices_group/deploy/roles/project/rsync.txt
+    # --out-format='<<CHANGED>>%i %n%L'
+
     tokens = list()
     tokens.append("rsync")
     tokens.append("--cvs-exclude")
@@ -576,7 +587,7 @@ POSIX_MAPPINGS = {
     'remove': remove,
     'replace': replace,
     'run': run,
-    'rysnc': rsync,
+    'rsync': rsync,
     'scopy': scopy,
     'sync': sync,
     'touch': touch,

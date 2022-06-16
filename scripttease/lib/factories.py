@@ -58,6 +58,10 @@ def command_factory(loader, excluded_kwargs=None, mappings=None, profile=PROFILE
         command = get_command(_mappings, command_name, *args, locations=loader.locations, **kwargs)
         if command is not None:
             command.number = number
+
+            if command.name == "template":
+                command.context = loader.get_context()
+
             commands.append(command)
 
             number += 1

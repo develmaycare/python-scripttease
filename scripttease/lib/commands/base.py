@@ -510,8 +510,11 @@ class Template(object):
     def __getattr__(self, item):
         return self.kwargs.get(item)
 
-    def __str__(self):
-        return "template"
+    # def __str__(self):
+    #     return "template"
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.source)
 
     def get_content(self):
         """Parse the template.

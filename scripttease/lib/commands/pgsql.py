@@ -25,8 +25,6 @@ def pgsql(command, *args, host="localhost", excluded_kwargs=None, password=None,
     #     kwargs['comment'] = "run %s postgres command" % command
 
     # Allow additional command line switches to pass through?
-    # Django's management commands can have a number of options. We need to filter out internal parameters so that these
-    # are not used as options for the management command.
     _kwargs = dict()
     for key in excluded_kwargs:
         if key in kwargs:
@@ -68,6 +66,22 @@ def pgsql_create(database, owner=None, template=None, **kwargs):
 
     if template is not None:
         kwargs['template'] = template
+
+    # psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '<your db name>'" | grep -q 1 | psql -U postgres -c "CREATE DATABASE <your db name>"
+    # first = pgsql("psql", **kwargs)
+    #
+    # first_query = "SELECT 1 FROM pg_database WHERE datname = '%s'" % database
+    # first_statement = '%s -tc "%s" | grep -q 1' % (first.statement, first_query)
+    #
+    # kwargs_without_password = kwargs.copy()
+    # if 'password' in kwargs_without_password:
+    #     kwargs_without_password.pop("password")
+    #
+    # second = pgsql("psql", **kwargs_without_password)
+    # second_statement = '%s -c "CREATE DATABASE %s"' % (second.statement, database)
+    #
+    # final_statement = "%s | %s" % (first_statement, second_statement)
+    # return Command(final_statement, **kwargs)
 
     return pgsql("createdb", database, **kwargs)
 

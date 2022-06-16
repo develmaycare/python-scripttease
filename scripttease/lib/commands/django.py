@@ -26,6 +26,10 @@ def django(management_command, *args, excluded_kwargs=None, **kwargs):
     # The excluded parameters (filtered below) may vary based on implementation. We do, however, need a default.
     excluded_kwargs = excluded_kwargs or EXCLUDED_KWARGS
 
+    venv = kwargs.pop("venv", None)
+    if venv is not None:
+        kwargs['prefix'] = "source %s/bin/activate" % venv
+
     # Django's management commands can have a number of options. We need to filter out internal parameters so that these
     # are not used as options for the management command.
     _kwargs = dict()
