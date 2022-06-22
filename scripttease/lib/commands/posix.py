@@ -1,5 +1,5 @@
 import os
-from .base import Command, Prompt
+from .base import Command, MultipleCommands, Prompt
 
 
 def append(path, content=None, **kwargs):
@@ -111,7 +111,7 @@ def directory(path, group=None, mode=None, owner=None, recursive=True, **kwargs)
     - recursive (bool): Create all directories along the path.
 
     """
-    kwargs.setdefault("comment", "create directory %s" % path)
+    comment = kwargs.pop("comment", "create directory %s" % path)
 
     statement = ["mkdir"]
     if mode is not None:
@@ -122,23 +122,34 @@ def directory(path, group=None, mode=None, owner=None, recursive=True, **kwargs)
 
     statement.append(path)
 
+    mkdir = Command(" ".join(statement), comment=comment, **kwargs)
+
+    chgrp = None
     if group:
         if recursive:
-            statement.append("&& chgrp -R %s" % group)
+            chgrp = Command("chgrp -R %s %s" % (group, path), comment="set %s group on %s" % (group, path), **kwargs)
         else:
-            statement.append("&& chgrp %s" % group)
+            chgrp = Command("chgrp %s %s" % (group, path), comment="set %s group on %s" % (group, path), **kwargs)
 
-        statement.append(path)
-
+    chown = None
     if owner:
         if recursive:
-            statement.append("&& chown -R %s" % owner)
+            chown = Command("chown -R %s %s" % (owner, path), comment="set %s owner on %s" % (owner, path), **kwargs)
         else:
-            statement.append("&& chown %s" % owner)
+            chown = Command("chown %s %s" % (owner, path), comment="set %s owner on %s" % (owner, path), **kwargs)
 
-        statement.append(path)
+    commands = list()
+    commands.append(mkdir)
+    if chgrp is not None:
+        commands.append(chgrp)
 
-    return Command(" ".join(statement), **kwargs)
+    if chown is not None:
+        commands.append(chown)
+
+    if len(commands) == 1:
+        return commands[0]
+
+    return MultipleCommands(commands, comment=comment)
 
 
 def extract(from_path, absolute=False, exclude=None, strip=None, to_path=None, view=False, **kwargs):
@@ -224,50 +235,58 @@ def perms(path, group=None, mode=None, owner=None, recursive=False, **kwargs):
     - recursive: Create all directories along the path.
 
     """
-    commands = list()
+    comment = kwargs.pop("comment", "set permissions on %s" % path)
 
-    kwargs['comment'] = "set permissions on %s" % path
-
+    chgrp = None
     if group is not None:
-        statement = ["chgrp"]
+        a = ["chgrp"]
 
         if recursive:
-            statement.append("-R")
+            a.append("-R")
 
-        statement.append(group)
-        statement.append(path)
+        a.append(group)
+        a.append(path)
 
-        commands.append(Command(" ".join(statement), **kwargs))
+        chgrp = Command(" ".join(a), comment="set %s group on %s" % (group, path), **kwargs)
 
-    if owner is not None:
-        statement = ["chown"]
-
-        if recursive:
-            statement.append("-R")
-
-        statement.append(owner)
-        statement.append(path)
-
-        commands.append(Command(" ".join(statement), **kwargs))
-
+    chmod = None
     if mode is not None:
-        statement = ["chmod"]
+        a = ["chmod"]
 
         if recursive:
-            statement.append("-R")
+            a.append("-R")
 
-        statement.append(str(mode))
-        statement.append(path)
+        a.append(mode)
+        a.append(path)
 
-        commands.append(Command(" ".join(statement), **kwargs))
+        chmod = Command(" ".join(a), comment="set %s mode on %s" % (mode, path), **kwargs)
 
-    kwargs.setdefault("comment", "set permissions on %s" % path)
+    chown = None
+    if owner is not None:
+        a = ["chown"]
 
-    a = list()
-    for c in commands:
-        a.append(c.get_statement(include_comment=True))
+        if recursive:
+            a.append("-R")
 
-    return Command("\n".join(a), **kwargs)
+        a.append(owner)
+        a.append(path)
+
+        chown = Command(" ".join(a), comment="set %s owner on %s" % (owner, path), **kwargs)
+
+    commands = list()
+    if chgrp is not None:
+        commands.append(chgrp)
+
+    if chmod is not None:
+        commands.append(chmod)
+
+    if chown is not None:
+        commands.append(chown)
+
+    if len(commands) == 1:
+        return commands[0]
+
+    return MultipleCommands(commands, comment=comment, **kwargs)
 
 
 def prompt(name, back_title="Input", choices=None, default=None, dialog=False, help_text=None, label=None, **kwargs):
@@ -394,7 +413,9 @@ def rsync(source, target, delete=False, exclude=None, host=None, key_file=None, 
 
     tokens = list()
     tokens.append("rsync")
-    tokens.append("--cvs-exclude")
+    # BUG: Providing rsync --cvs-exclude was causing directories named "tags" to be omitted.
+    # tokens.append("--cvs-exclude")
+    tokens.append("--exclude=.git")
     tokens.append("--checksum")
     tokens.append("--compress")
 
