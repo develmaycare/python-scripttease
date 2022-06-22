@@ -14,6 +14,7 @@ __all__ = (
     "Command",
     "Content",
     "ItemizedCommand",
+    "MultipleCommands",
     "Prompt",
     "Sudo",
     "Template",
@@ -273,6 +274,8 @@ class ItemizedCommand(object):
         self.args = args
         self.callback = callback
         self.items = items
+        self.name = None
+
         self.kwargs = kwargs
 
         # Set defaults for when ItemizedCommand is referenced directly before individual commands are instantiated. For
@@ -292,6 +295,7 @@ class ItemizedCommand(object):
 
         """
         kwargs = self.kwargs.copy()
+        kwargs['name'] = self.name
 
         a = list()
         for item in self.items:
@@ -324,6 +328,42 @@ class ItemizedCommand(object):
     def is_itemized(self):
         """Always returns ``True``."""
         return True
+
+
+class MultipleCommands(object):
+    """An interface for handling command composition where multiple statements must be generated."""
+
+    def __init__(self, commands, comment=None, tags=None, **kwargs):
+        self.commands = commands
+        self.comment = comment or "run multiple commands"
+        self.tags = tags or list()
+
+        self.options = kwargs
+
+    def __getattr__(self, item):
+        return self.options.get(item)
+
+    def __iter__(self):
+        return iter(self.commands)
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.comment)
+
+    def get_statement(self, cd=True, include_comment=True, include_register=True, include_stop=True):
+        a = list()
+        if include_comment:
+            a.append("# %s" % self.comment)
+
+        for command in self.commands:
+            statement = command.get_statement(
+                cd=cd,
+                include_comment=False,
+                include_register=include_register,
+                include_stop=include_stop
+            )
+            a.append(statement)
+
+        return "\n".join(a)
 
 
 class Prompt(Command):
