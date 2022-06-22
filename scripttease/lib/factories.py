@@ -57,6 +57,7 @@ def command_factory(loader, excluded_kwargs=None, mappings=None, profile=PROFILE
 
         command = get_command(_mappings, command_name, *args, locations=loader.locations, **kwargs)
         if command is not None:
+            command.name = command_name
             command.number = number
 
             if command.name == "template":
@@ -84,7 +85,7 @@ def get_command(mappings, name, *args, locations=None, **kwargs):
     args and kwargs are passed to the callback.
 
     :rtype: scripttease.lib.commands.base.Command | scripttease.lib.commands.base.ItemizedCommand |
-            scripttease.lib.commands.base.Template
+            scripttease.lib.commands.base.Template | scripttease.lib.commands.base.MultipleCommands
 
     """
     # Args need to be mutable.
