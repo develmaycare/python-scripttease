@@ -49,7 +49,7 @@ def python_pip_file(path, venv=None, version=3, **kwargs):
 
     kwargs.setdefault("comment", "install packages from pip file %s" % path)
 
-    statement = "%s -r %s" % (manager, path)
+    statement = "%s install -r %s" % (manager, path)
 
     return Command(statement, **kwargs)
 
