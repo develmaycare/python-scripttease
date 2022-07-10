@@ -13,7 +13,7 @@ def read_file(path):
 
 setup(
     name='python-scripttease',
-    version=read_file("VERSION.txt"),
+    version=read_file("PEP440.txt"),
     description=read_file("DESCRIPTION.txt"),
     long_description=read_file("README.markdown"),
     long_description_content_type="text/markdown",
