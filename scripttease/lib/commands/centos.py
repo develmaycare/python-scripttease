@@ -90,52 +90,52 @@ def apache_test(**kwargs):
     return Command("apachectl configtest", **kwargs)
 
 
-def service_reload(name, **kwargs):
+def service_reload(service, **kwargs):
     """Reload a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "reload %s service" % name)
-    kwargs.setdefault("register", "%s_reloaded" % name)
+    kwargs.setdefault("comment", "reload %s service" % service)
+    kwargs.setdefault("register", "%s_reloaded" % service)
 
-    return Command("systemctl reload %s" % name, **kwargs)
+    return Command("systemctl reload %s" % service, **kwargs)
 
 
-def service_restart(name, **kwargs):
+def service_restart(service, **kwargs):
     """Restart a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "restart %s service" % name)
-    kwargs.setdefault("register", "%s_restarted" % name)
+    kwargs.setdefault("comment", "restart %s service" % service)
+    kwargs.setdefault("register", "%s_restarted" % service)
 
-    return Command("ssystemctl restart %s" % name, **kwargs)
+    return Command("ssystemctl restart %s" % service, **kwargs)
 
 
-def service_start(name, **kwargs):
+def service_start(service, **kwargs):
     """Start a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "start %s service" % name)
-    kwargs.setdefault("register", "%s_started" % name)
+    kwargs.setdefault("comment", "start %s service" % service)
+    kwargs.setdefault("register", "%s_started" % service)
 
-    return Command("systemctl start %s" % name, **kwargs)
+    return Command("systemctl start %s" % service, **kwargs)
 
 
-def service_stop(name, **kwargs):
+def service_stop(service, **kwargs):
     """Stop a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "stop %s service" % name)
-    kwargs.setdefault("register", "%s_stopped" % name)
+    kwargs.setdefault("comment", "stop %s service" % service)
+    kwargs.setdefault("register", "%s_stopped" % service)
 
-    return Command("systemctl stop %s" % name, **kwargs)
+    return Command("systemctl stop %s" % service, **kwargs)
 
 
 def system(op, **kwargs):
@@ -154,15 +154,15 @@ def system(op, **kwargs):
         raise NameError("Unrecognized or unsupported system operation: %s" % op)
 
 
-def system_install(name, **kwargs):
+def system_install(package, **kwargs):
     """Install a system-level package.
 
     - name (str): The name of the package to install.
 
     """
-    kwargs.setdefault("comment", "install system package %s" % name)
+    kwargs.setdefault("comment", "install system package %s" % package)
 
-    return Command("yum install -y %s" % name, **kwargs)
+    return Command("yum install -y %s" % package, **kwargs)
 
 
 def system_reboot(**kwargs):
@@ -171,15 +171,15 @@ def system_reboot(**kwargs):
     return Command("reboot", **kwargs)
 
 
-def system_uninstall(name, **kwargs):
+def system_uninstall(package, **kwargs):
     """Uninstall a system-level package.
 
     - name (str): The name of the package to uninstall.
 
     """
-    kwargs.setdefault("comment", "remove system package %s" % name)
+    kwargs.setdefault("comment", "remove system package %s" % package)
 
-    return Command("yum remove -y %s" % name, **kwargs)
+    return Command("yum remove -y %s" % package, **kwargs)
 
 
 def system_update(**kwargs):

@@ -34,7 +34,7 @@ __all__ = (
     "system_update",
     "system_upgrade",
     "system_uninstall",
-    "template",
+    # "template",
     "user",
 )
 
@@ -61,47 +61,47 @@ def apache(op, **kwargs):
         raise NameError("Unrecognized or unsupported apache operation: %s" % op)
 
 
-def apache_disable_module(name, **kwargs):
+def apache_disable_module(module, **kwargs):
     """Disable an Apache module.
 
     - name (str): The module name.
 
     """
-    kwargs.setdefault("comment", "disable %s apache module" % name)
+    kwargs.setdefault("comment", "disable %s apache module" % module)
 
-    return Command("a2dismod %s" % name, **kwargs)
+    return Command("a2dismod %s" % module, **kwargs)
 
 
-def apache_disable_site(name, **kwargs):
+def apache_disable_site(site, **kwargs):
     """Disable an Apache site.
 
     - name (str): The domain name.
 
     """
-    kwargs.setdefault("comment", "disable %s apache site" % name)
+    kwargs.setdefault("comment", "disable %s apache site" % site)
 
-    return Command("a2dissite %s" % name, **kwargs)
+    return Command("a2dissite %s" % site, **kwargs)
 
 
-def apache_enable_module(name, **kwargs):
+def apache_enable_module(module, **kwargs):
     """Enable an Apache module.
 
     - name (str): The module name.
 
     """
-    kwargs.setdefault("comment", "enable %s apache module" % name)
+    kwargs.setdefault("comment", "enable %s apache module" % module)
 
-    return Command("a2enmod %s" % name, **kwargs)
+    return Command("a2enmod %s" % module, **kwargs)
 
 
-def apache_enable_site(name, **kwargs):
+def apache_enable_site(site, **kwargs):
     """Enable an Apache site.
 
 
     """
-    kwargs.setdefault("comment", "enable %s apache module" % name)
+    kwargs.setdefault("comment", "enable %s apache module" % site)
 
-    return Command("a2ensite %s" % name, **kwargs)
+    return Command("a2ensite %s" % site, **kwargs)
 
 
 def apache_reload(**kwargs):
@@ -138,52 +138,52 @@ def apache_test(**kwargs):
     return Command("apachectl configtest", **kwargs)
 
 
-def service_reload(name, **kwargs):
+def service_reload(service, **kwargs):
     """Reload a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "reload %s service" % name)
-    kwargs.setdefault("register", "%s_reloaded" % name)
+    kwargs.setdefault("comment", "reload %s service" % service)
+    kwargs.setdefault("register", "%s_reloaded" % service)
 
-    return Command("service %s reload" % name, **kwargs)
+    return Command("service %s reload" % service, **kwargs)
 
 
-def service_restart(name, **kwargs):
+def service_restart(service, **kwargs):
     """Restart a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "restart %s service" % name)
-    kwargs.setdefault("register", "%s_restarted" % name)
+    kwargs.setdefault("comment", "restart %s service" % service)
+    kwargs.setdefault("register", "%s_restarted" % service)
 
-    return Command("service %s restart" % name, **kwargs)
+    return Command("service %s restart" % service, **kwargs)
 
 
-def service_start(name, **kwargs):
+def service_start(service, **kwargs):
     """Start a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "start %s service" % name)
-    kwargs.setdefault("register", "%s_started" % name)
+    kwargs.setdefault("comment", "start %s service" % service)
+    kwargs.setdefault("register", "%s_started" % service)
 
-    return Command("service %s start" % name, **kwargs)
+    return Command("service %s start" % service, **kwargs)
 
 
-def service_stop(name, **kwargs):
+def service_stop(service, **kwargs):
     """Stop a service.
 
     - name (str): The service name.
 
     """
-    kwargs.setdefault("comment", "stop %s service" % name)
-    kwargs.setdefault("register", "%s_stopped" % name)
+    kwargs.setdefault("comment", "stop %s service" % service)
+    kwargs.setdefault("register", "%s_stopped" % service)
 
-    return Command("service %s stop" % name, **kwargs)
+    return Command("service %s stop" % service, **kwargs)
 
 
 def system(op, **kwargs):
@@ -202,15 +202,15 @@ def system(op, **kwargs):
         raise NameError("Unrecognized or unsupported system operation: %s" % op)
 
 
-def system_install(name, **kwargs):
+def system_install(package, **kwargs):
     """Install a system-level package.
 
     - name (str): The name of the package to install.
 
     """
-    kwargs.setdefault("comment", "install system package %s" % name)
+    kwargs.setdefault("comment", "install system package %s" % package)
 
-    return Command("apt install -y %s" % name, **kwargs)
+    return Command("apt install -y %s" % package, **kwargs)
 
 
 def system_reboot(**kwargs):
@@ -219,15 +219,15 @@ def system_reboot(**kwargs):
     return Command("reboot", **kwargs)
 
 
-def system_uninstall(name, **kwargs):
+def system_uninstall(package, **kwargs):
     """Uninstall a system-level package.
 
     - name (str): The name of the package to uninstall.
 
     """
-    kwargs.setdefault("comment", "remove system package %s" % name)
+    kwargs.setdefault("comment", "remove system package %s" % package)
 
-    return Command("apt uninstall -y %s" % name, **kwargs)
+    return Command("apt uninstall -y %s" % package, **kwargs)
 
 
 def system_update(**kwargs):

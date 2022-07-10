@@ -256,7 +256,7 @@ def perms(path, group=None, mode=None, owner=None, recursive=False, **kwargs):
         if recursive:
             a.append("-R")
 
-        a.append(mode)
+        a.append(str(mode))
         a.append(path)
 
         chmod = Command(" ".join(a), comment="set %s mode on %s" % (mode, path), **kwargs)
