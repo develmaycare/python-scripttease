@@ -1,5 +1,6 @@
 import logging
 from ..constants import EXCLUDED_KWARGS, PROFILE
+from ..exceptions import InvalidInput
 from ..variables import LOGGER_NAME
 from .commands.base import Command, ItemizedCommand, Template
 from .commands.centos import CENTOS_MAPPINGS
@@ -55,7 +56,11 @@ def command_factory(loader, excluded_kwargs=None, mappings=None, profile=PROFILE
     for command_name, args, kwargs in loader.commands:
         kwargs['excluded_kwargs'] = _excluded_kwargs
 
-        command = get_command(_mappings, command_name, *args, locations=loader.locations, **kwargs)
+        try:
+            command = get_command(_mappings, command_name, *args, locations=loader.locations, **kwargs)
+        except TypeError as e:
+            raise InvalidInput("The %s command in %s is not configured correctly: %s" % (command_name, loader.path, e))
+
         if command is not None:
             command.name = command_name
             command.number = number
