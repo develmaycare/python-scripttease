@@ -608,10 +608,11 @@ class Template(object):
             first_line = _content.pop(0)
             command = '%s echo "%s" > %s' % (self.sudo, first_line, self.target)
             lines.append(command.lstrip())
-            command = "%s cat > %s << EOF" % (self.sudo, self.target)
+            # https://stackoverflow.com/a/25903579
+            command = "%s cat << FOE >> %s" % (self.sudo, self.target)
             lines.append(command.lstrip())
             lines.append("\n".join(_content))
-            lines.append("EOF")
+            lines.append("FOE")
         else:
             command = "%s cat > %s << EOF" % (self.sudo, self.target)
             lines.append(command.lstrip())

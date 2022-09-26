@@ -30,7 +30,7 @@ def slack(message, url=None, **kwargs):
 
     statement = list()
     statement.append("curl -X POST -H 'Content-type: application/json' --data")
-    statement.append('{"text": "%s"}' % message)
+    statement.append('\'{"text": "%s"}\'' % message)
     statement.append(url)
 
     return Command(statement, **kwargs)
@@ -42,7 +42,7 @@ def twist(message, title="Notice", url=None, **kwargs):
 
     statement = list()
     statement.append("curl -X POST -H 'Content-type: application/json' --data")
-    statement.append('{"content": "%s", "title": "%s"' % (message, title))
+    statement.append('\'{"content": "%s", "title": "%s"}\'' % (message, title))
     statement.append(url)
 
     return Command(" ".join(statement), **kwargs)
